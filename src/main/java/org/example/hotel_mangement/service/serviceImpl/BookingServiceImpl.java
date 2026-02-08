@@ -17,6 +17,7 @@ import org.example.hotel_mangement.repository.RoomRepository;
 import org.example.hotel_mangement.service.BookingService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -32,22 +33,45 @@ public class BookingServiceImpl implements BookingService {
     private final RoomRepository roomRepository;
 
     @Override
-    public PayloadResponse<BookingDTO> findAll(int page, int size) {
-        PageRequest pageable = PageRequest.of(page - 1, size);
-        Page<Booking> bookings = bookingRepository.findAllWithRelations(pageable);
+    public PayloadResponse<BookingDTO> findAll(int page, int size, String search, String sortBy, String sortDir) {
+        Sort sort = createSort(sortBy, sortDir);
+        PageRequest pageable = PageRequest.of(page - 1, size, sort);
+        
+        Page<Booking> bookings;
+        if (search != null && !search.trim().isEmpty()) {
+            bookings = bookingRepository.searchBookings(search.trim(), pageable);
+        } else {
+            bookings = bookingRepository.findAllWithRelations(pageable);
+        }
 
         List<BookingDTO> bookingDTOs = new ArrayList<>();
-        if (bookings.isEmpty()) {
-            throw new NotFoundException("Booking not enough with page " + page + ".");
-        }
-        for (Booking booking : bookings) {
-            bookingDTOs.add(toDTO(booking));
+        if (!bookings.isEmpty()) {
+            for (Booking booking : bookings) {
+                bookingDTOs.add(toDTO(booking));
+            }
         }
 
         return PayloadResponse.<BookingDTO>builder()
                 .items(bookingDTOs)
                 .pagination(PaginationResponse.fromPage(bookings, page, size))
                 .build();
+    }
+    
+    private Sort createSort(String sortBy, String sortDir) {
+        Sort.Direction direction = "desc".equalsIgnoreCase(sortDir) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        String fieldName = mapSortField(sortBy);
+        return Sort.by(direction, fieldName);
+    }
+    
+    private String mapSortField(String sortBy) {
+        switch (sortBy) {
+            case "bookingDate": return "bookingDate";
+            case "arrivalDate": return "arrivalDate";
+            case "departureDate": return "departureDate";
+            case "guestName": return "guest.firstName";
+            case "hotelName": return "hotel.hotelName";
+            default: return "bookingDate";
+        }
     }
 
     @Override

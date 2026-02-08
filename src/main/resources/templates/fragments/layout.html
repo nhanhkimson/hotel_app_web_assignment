@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${pageTitle ?: 'Hotel Management System'}">Hotel Management System</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="relative bg-gray-800/50 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-white/10">
+        <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+            <div class="relative flex h-16 items-center justify-between">
+                <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
+                    <button type="button" id="mobile-menu-button" class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-white/5 hover:text-white focus:outline-2 focus:-outline-offset-1 focus:outline-indigo-500">
+                        <span class="absolute -inset-0.5"></span>
+                        <span class="sr-only">Open main menu</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="size-6" id="menu-icon-open">
+                            <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" data-slot="icon" aria-hidden="true" class="size-6 hidden" id="menu-icon-close">
+                            <path d="M6 18 18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+                    <div class="flex shrink-0 items-center">
+                        <a th:href="@{/}" class="text-white text-xl font-bold">🏨 Hotel Management</a>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:block">
+                        <div class="flex space-x-4">
+                            <a th:href="@{/}" th:classappend="${activePage == 'dashboard'} ? 'bg-gray-950/50 text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white'" class="rounded-md px-3 py-2 text-sm font-medium">Dashboard</a>
+                            <a th:href="@{/hotels}" th:classappend="${activePage == 'hotels'} ? 'bg-gray-950/50 text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white'" class="rounded-md px-3 py-2 text-sm font-medium">Hotels</a>
+                            <a th:href="@{/rooms}" th:classappend="${activePage == 'rooms'} ? 'bg-gray-950/50 text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white'" class="rounded-md px-3 py-2 text-sm font-medium">Rooms</a>
+                            <a th:href="@{/room-types}" th:classappend="${activePage == 'room-types'} ? 'bg-gray-950/50 text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white'" class="rounded-md px-3 py-2 text-sm font-medium">Room Types</a>
+                            <a th:href="@{/bookings}" th:classappend="${activePage == 'bookings'} ? 'bg-gray-950/50 text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white'" class="rounded-md px-3 py-2 text-sm font-medium">Bookings</a>
+                            <a th:href="@{/bills}" th:classappend="${activePage == 'bills'} ? 'bg-gray-950/50 text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white'" class="rounded-md px-3 py-2 text-sm font-medium">Bills</a>
+                            <a th:href="@{/guests}" th:classappend="${activePage == 'guests'} ? 'bg-gray-950/50 text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white'" class="rounded-md px-3 py-2 text-sm font-medium">Guests</a>
+                            <a th:href="@{/employees}" th:classappend="${activePage == 'employees'} ? 'bg-gray-950/50 text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white'" class="rounded-md px-3 py-2 text-sm font-medium">Employees</a>
+                            <a th:href="@{/roles}" th:classappend="${activePage == 'roles'} ? 'bg-gray-950/50 text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white'" class="rounded-md px-3 py-2 text-sm font-medium">Roles</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                    <div class="relative ml-3">
+                        <div class="flex rounded-full bg-gray-800 outline -outline-offset-1 outline-white/10">
+                            <span class="text-white px-3 py-1 text-sm">Admin</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden sm:hidden">
+            <div class="space-y-1 px-2 pt-2 pb-3">
+                <a th:href="@{/}" th:classappend="${activePage == 'dashboard'} ? 'bg-gray-950/50 text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white'" class="block rounded-md px-3 py-2 text-base font-medium">Dashboard</a>
+                <a th:href="@{/hotels}" th:classappend="${activePage == 'hotels'} ? 'bg-gray-950/50 text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white'" class="block rounded-md px-3 py-2 text-base font-medium">Hotels</a>
+                <a th:href="@{/rooms}" th:classappend="${activePage == 'rooms'} ? 'bg-gray-950/50 text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white'" class="block rounded-md px-3 py-2 text-base font-medium">Rooms</a>
+                <a th:href="@{/room-types}" th:classappend="${activePage == 'room-types'} ? 'bg-gray-950/50 text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white'" class="block rounded-md px-3 py-2 text-base font-medium">Room Types</a>
+                <a th:href="@{/bookings}" th:classappend="${activePage == 'bookings'} ? 'bg-gray-950/50 text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white'" class="block rounded-md px-3 py-2 text-base font-medium">Bookings</a>
+                <a th:href="@{/bills}" th:classappend="${activePage == 'bills'} ? 'bg-gray-950/50 text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white'" class="block rounded-md px-3 py-2 text-base font-medium">Bills</a>
+                <a th:href="@{/guests}" th:classappend="${activePage == 'guests'} ? 'bg-gray-950/50 text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white'" class="block rounded-md px-3 py-2 text-base font-medium">Guests</a>
+                <a th:href="@{/employees}" th:classappend="${activePage == 'employees'} ? 'bg-gray-950/50 text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white'" class="block rounded-md px-3 py-2 text-base font-medium">Employees</a>
+                <a th:href="@{/roles}" th:classappend="${activePage == 'roles'} ? 'bg-gray-950/50 text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white'" class="block rounded-md px-3 py-2 text-base font-medium">Roles</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="min-h-screen">
+        <div th:include="${content}">Content goes here</div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="/js/utils.js"></script>
+    
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button')?.addEventListener('click', () => {
+            const menu = document.getElementById('mobile-menu');
+            const iconOpen = document.getElementById('menu-icon-open');
+            const iconClose = document.getElementById('menu-icon-close');
+            
+            menu.classList.toggle('hidden');
+            iconOpen.classList.toggle('hidden');
+            iconClose.classList.toggle('hidden');
+        });
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.add('hidden');
+                document.getElementById('menu-icon-open').classList.remove('hidden');
+                document.getElementById('menu-icon-close').classList.add('hidden');
+            });
+        });
+    </script>
+</body>
+</html>
+

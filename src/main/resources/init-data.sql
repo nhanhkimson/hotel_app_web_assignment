@@ -161,3 +161,4 @@ INSERT INTO guest (guest_id, booking_id, guest_title, first_name, last_name, dob
 (uuid_generate_v4(), NULL, 'Dr', 'Emily', 'Nelson', '1986-08-30', 'Female', '+90-212-123-4567', 'emily.nelson@email.tr', 'guest_pass_29', 'TR90123456', 'Istiklal Caddesi 100', '34430', 'Istanbul', 'Turkey'),
 (uuid_generate_v4(), NULL, 'Mr', 'Daniel', 'Carter', '1983-03-06', 'Male', '+81-3-1234-5678', 'daniel.carter@email.jp', 'guest_pass_30', 'JP01234567', 'Shibuya 1-2-3', '150-0002', 'Tokyo', 'Japan');
 
+

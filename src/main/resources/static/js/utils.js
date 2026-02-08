@@ -1,30 +1,77 @@
 // Utility Functions and UI Components
 
-// Enhanced Toast Notification System
+// Enhanced Toast Notification System (Flowbite Design)
 class Toast {
     static show(message, type = 'success', duration = 3000) {
+        // Generate unique ID for toast
+        const toastId = `toast-${type}-${Date.now()}`;
+        
         const toast = document.createElement('div');
-        const colors = {
-            success: 'bg-green-500',
-            error: 'bg-red-500',
-            warning: 'bg-yellow-500',
-            info: 'bg-blue-500'
+        toast.id = toastId;
+        toast.setAttribute('role', 'alert');
+        
+        // Type configurations
+        const typeConfig = {
+            success: {
+                iconBg: 'bg-green-100',
+                iconText: 'text-green-600',
+                iconSvg: '<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5"/>',
+                iconLabel: 'Check icon'
+            },
+            error: {
+                iconBg: 'bg-red-100',
+                iconText: 'text-red-600',
+                iconSvg: '<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>',
+                iconLabel: 'Error icon'
+            },
+            warning: {
+                iconBg: 'bg-yellow-100',
+                iconText: 'text-yellow-600',
+                iconSvg: '<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 13V8m0 8h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>',
+                iconLabel: 'Warning icon'
+            },
+            info: {
+                iconBg: 'bg-blue-100',
+                iconText: 'text-blue-600',
+                iconSvg: '<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/>',
+                iconLabel: 'Info icon'
+            }
         };
         
-        toast.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-xl text-white transform transition-all duration-300 translate-x-full opacity-0 ${colors[type] || colors.success}`;
+        const config = typeConfig[type] || typeConfig.success;
+        
+        // Flowbite-style toast classes
+        toast.className = 'flex items-center w-full max-w-sm p-4 text-gray-700 bg-white rounded-lg shadow-sm border border-gray-200 fixed top-4 right-4 z-50 transform transition-all duration-300 translate-x-full opacity-0';
+        
         toast.innerHTML = `
-            <div class="flex items-center space-x-3">
-                <span>${this.getIcon(type)}</span>
-                <span class="font-medium">${message}</span>
-                <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
+            <div class="inline-flex items-center justify-center shrink-0 w-7 h-7 ${config.iconText} ${config.iconBg} rounded">
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    ${config.iconSvg}
+                </svg>
+                <span class="sr-only">${config.iconLabel}</span>
             </div>
+            <div class="ms-3 text-sm font-normal">${message}</div>
+            <button type="button" 
+                    class="ms-auto flex items-center justify-center text-gray-700 hover:text-gray-900 bg-transparent border border-transparent hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded text-sm h-8 w-8 focus:outline-none" 
+                    data-dismiss-target="#${toastId}" 
+                    aria-label="Close">
+                <span class="sr-only">Close</span>
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
+                </svg>
+            </button>
         `;
         
-        document.body.appendChild(toast);
+        // Ensure toast container exists
+        let toastContainer = document.getElementById('toast-container');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.id = 'toast-container';
+            toastContainer.className = 'fixed top-4 right-4 z-50 space-y-4';
+            document.body.appendChild(toastContainer);
+        }
+        
+        toastContainer.appendChild(toast);
         
         // Animate in
         setTimeout(() => {
@@ -32,21 +79,35 @@ class Toast {
             toast.classList.add('translate-x-0', 'opacity-100');
         }, 10);
         
-        // Auto remove
-        setTimeout(() => {
-            toast.classList.add('translate-x-full', 'opacity-0');
-            setTimeout(() => toast.remove(), 300);
-        }, duration);
+        // Auto remove after duration
+        if (duration > 0) {
+            setTimeout(() => {
+                this.dismiss(toastId);
+            }, duration);
+        }
+        
+        // Handle close button click
+        const closeButton = toast.querySelector(`[data-dismiss-target="#${toastId}"]`);
+        if (closeButton) {
+            closeButton.addEventListener('click', () => {
+                this.dismiss(toastId);
+            });
+        }
     }
     
-    static getIcon(type) {
-        const icons = {
-            success: '✓',
-            error: '✕',
-            warning: '⚠',
-            info: 'ℹ'
-        };
-        return icons[type] || icons.success;
+    static dismiss(toastId) {
+        const toast = document.getElementById(toastId);
+        if (toast) {
+            toast.classList.add('translate-x-full', 'opacity-0');
+            setTimeout(() => {
+                toast.remove();
+                // Remove container if empty
+                const container = document.getElementById('toast-container');
+                if (container && container.children.length === 0) {
+                    container.remove();
+                }
+            }, 300);
+        }
     }
 }
 

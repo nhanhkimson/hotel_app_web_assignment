@@ -18,6 +18,7 @@ import org.example.hotel_mangement.repository.RoomTypeRepository;
 import org.example.hotel_mangement.service.RoomService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -30,22 +31,44 @@ public class RoomServiceImpl implements RoomService {
     private final RoomTypeRepository roomTypeRepository;
 
     @Override
-    public PayloadResponse<RoomDTO> findAll(int page, int size) {
-        PageRequest pageable = PageRequest.of(page - 1, size);
-        Page<Room> rooms = roomRepository.findAllWithRelations(pageable);
+    public PayloadResponse<RoomDTO> findAll(int page, int size, String search, String sortBy, String sortDir) {
+        Sort sort = createSort(sortBy, sortDir);
+        PageRequest pageable = PageRequest.of(page - 1, size, sort);
+        
+        Page<Room> rooms;
+        if (search != null && !search.trim().isEmpty()) {
+            rooms = roomRepository.searchRooms(search.trim(), pageable);
+        } else {
+            rooms = roomRepository.findAllWithRelations(pageable);
+        }
 
         List<RoomDTO> roomDTOs = new ArrayList<>();
-        if (rooms.isEmpty()) {
-            throw new NotFoundException("Room not enough with page " + page + ".");
-        }
-        for (Room room : rooms) {
-            roomDTOs.add(toDTO(room));
+        if (!rooms.isEmpty()) {
+            for (Room room : rooms) {
+                roomDTOs.add(toDTO(room));
+            }
         }
 
         return PayloadResponse.<RoomDTO>builder()
                 .items(roomDTOs)
                 .pagination(PaginationResponse.fromPage(rooms, page, size))
                 .build();
+    }
+    
+    private Sort createSort(String sortBy, String sortDir) {
+        Sort.Direction direction = "desc".equalsIgnoreCase(sortDir) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        String fieldName = mapSortField(sortBy);
+        return Sort.by(direction, fieldName);
+    }
+    
+    private String mapSortField(String sortBy) {
+        switch (sortBy) {
+            case "roomNo": return "roomNo";
+            case "hotelName": return "hotel.hotelName";
+            case "roomType": return "roomType.roomType";
+            case "occupancy": return "occupancy";
+            default: return "roomNo";
+        }
     }
 
     @Override

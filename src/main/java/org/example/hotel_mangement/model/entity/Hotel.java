@@ -51,4 +51,8 @@ public class Hotel {
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Booking> bookings;
+
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<org.example.hotel_mangement.model.entity.HotelImage> images;
 }

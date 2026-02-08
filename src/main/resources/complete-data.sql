@@ -169,3 +169,4 @@ SELECT 'Roles', COUNT(*) FROM role
 UNION ALL
 SELECT 'Guests', COUNT(*) FROM guest;
 
+

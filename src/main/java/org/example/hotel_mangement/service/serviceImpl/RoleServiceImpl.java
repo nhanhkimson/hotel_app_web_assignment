@@ -11,6 +11,7 @@ import org.example.hotel_mangement.repository.RoleRepository;
 import org.example.hotel_mangement.service.RoleService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,22 +24,42 @@ public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
 
     @Override
-    public PayloadResponse<RoleDTO> findAll(int page, int size) {
-        PageRequest pageable = PageRequest.of(page - 1, size);
-        Page<Role> roles = roleRepository.findAll(pageable);
+    public PayloadResponse<RoleDTO> findAll(int page, int size, String search, String sortBy, String sortDir) {
+        Sort sort = createSort(sortBy, sortDir);
+        PageRequest pageable = PageRequest.of(page - 1, size, sort);
+        
+        Page<Role> roles;
+        if (search != null && !search.trim().isEmpty()) {
+            roles = roleRepository.searchRoles(search.trim(), pageable);
+        } else {
+            roles = roleRepository.findAll(pageable);
+        }
 
         List<RoleDTO> roleDTOs = new ArrayList<>();
-        if (roles.isEmpty()) {
-            throw new NotFoundException("Role not enough with page " + page + ".");
-        }
-        for (Role role : roles) {
-            roleDTOs.add(toDTO(role));
+        if (!roles.isEmpty()) {
+            for (Role role : roles) {
+                roleDTOs.add(toDTO(role));
+            }
         }
 
         return PayloadResponse.<RoleDTO>builder()
                 .items(roleDTOs)
                 .pagination(PaginationResponse.fromPage(roles, page, size))
                 .build();
+    }
+    
+    private Sort createSort(String sortBy, String sortDir) {
+        Sort.Direction direction = "desc".equalsIgnoreCase(sortDir) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        String fieldName = mapSortField(sortBy);
+        return Sort.by(direction, fieldName);
+    }
+    
+    private String mapSortField(String sortBy) {
+        switch (sortBy) {
+            case "roleTitle": return "roleTitle";
+            case "roleDesc": return "roleDesc";
+            default: return "roleTitle";
+        }
     }
 
     @Override

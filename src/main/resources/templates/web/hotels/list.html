@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${pageTitle ?: 'Hotels - Hotel Management'}">Hotels - Hotel Management</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Sidebar -->
+    <div th:replace="~{fragments/web-sidebar :: sidebar}"></div>
+    
+    <!-- Mobile Toggle Button -->
+    <button data-drawer-target="sidebar-multi-level-sidebar" data-drawer-toggle="sidebar-multi-level-sidebar" aria-controls="sidebar-multi-level-sidebar" type="button" 
+            class="text-gray-900 bg-transparent border border-transparent hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden fixed top-2 left-2 z-50">
+        <span class="sr-only">Open sidebar</span>
+        <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h10"/>
+        </svg>
+    </button>
+    
+    <!-- Main Content -->
+    <div class="p-4 sm:ml-64">
+        <main class="min-h-screen">
+            <div class="p-6 animate-fade-in">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">Hotels</h1>
+                <p class="text-gray-600 mt-1">Manage your hotel properties</p>
+            </div>
+            <a th:href="@{/web/hotels/new}" class="text-white bg-blue-600 border border-transparent hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 shadow-sm font-medium leading-5 rounded-lg text-sm px-4 py-2.5 focus:outline-none inline-flex items-center space-x-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                <span>Add Hotel</span>
+            </a>
+        </div>
+        
+        <div th:if="${successMessage}" class="mb-4 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
+            <span th:text="${successMessage}">Success message</span>
+        </div>
+        <div th:if="${errorMessage}" class="mb-4 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+            <span th:text="${errorMessage}">Error message</span>
+        </div>
+        
+        <!-- Search and Sort Controls -->
+        <div class="bg-white block p-6 border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 mb-4">
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1 relative">
+                    <form method="get" action="/web/hotels" id="search-form" class="flex gap-2" onsubmit="this.querySelector('input[name=page]').value='1'; return true;">
+                        <input type="text" 
+                               name="search" 
+                               id="hotel-search" 
+                               th:value="${search}"
+                               placeholder="Search by name, city, or country..." 
+                               class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-4 py-2.5 shadow-sm placeholder:text-gray-500">
+                        <input type="hidden" name="sortBy" id="form-sort-by" th:value="${sortBy}">
+                        <input type="hidden" name="sortDir" id="form-sort-dir" th:value="${sortDir}">
+                        <input type="hidden" name="page" id="form-page" value="1">
+                        <svg class="absolute left-3 top-3 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <button type="submit" class="text-white bg-blue-600 border border-transparent hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 shadow-sm font-medium leading-5 rounded-lg text-sm px-4 py-2.5 focus:outline-none">
+                            Search
+                        </button>
+                        <a th:if="${search != null && !search.isEmpty()}" 
+                           th:href="@{/web/hotels(sortBy=${sortBy}, sortDir=${sortDir})}" 
+                           class="text-gray-700 bg-gray-100 border border-gray-300 hover:bg-gray-200 hover:text-gray-900 focus:ring-4 focus:ring-gray-200 shadow-sm font-medium leading-5 rounded-lg text-sm px-4 py-2.5 focus:outline-none">
+                            Clear
+                        </a>
+                    </form>
+                </div>
+                <div class="flex gap-2">
+                    <select id="sort-by" class="block w-full px-3 py-2.5 bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm">
+                        <option value="hotelName" th:selected="${sortBy == 'hotelName'}">Sort by Name</option>
+                        <option value="city" th:selected="${sortBy == 'city'}">Sort by City</option>
+                        <option value="country" th:selected="${sortBy == 'country'}">Sort by Country</option>
+                        <option value="numRooms" th:selected="${sortBy == 'numRooms'}">Sort by Rooms</option>
+                        <option value="starRating" th:selected="${sortBy == 'starRating'}">Sort by Rating</option>
+                    </select>
+                    <select id="sort-dir" class="block w-full px-3 py-2.5 bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm">
+                        <option value="asc" th:selected="${sortDir == 'asc'}">Ascending</option>
+                        <option value="desc" th:selected="${sortDir == 'desc'}">Descending</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Table Skeleton (shown while loading) -->
+        <div id="table-skeleton" class="hidden">
+            <div th:replace="~{fragments/skeleton :: tableSkeleton(5, 6)}"></div>
+        </div>
+        
+        <!-- Actual Table (hidden while loading) -->
+        <div id="hotels-table-container" class="relative overflow-x-auto bg-gray-50 shadow-sm rounded-lg border border-gray-200">
+            <table id="hotels-table" class="w-full text-sm text-left text-gray-700">
+                <thead class="text-sm text-gray-700 bg-gray-100 border-b border-gray-200">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 font-medium cursor-pointer hover:bg-gray-200 transition-colors" onclick="sortTable('hotelName')">
+                            Name
+                            <span th:if="${sortBy == 'hotelName'}" th:text="${sortDir == 'asc' ? '↑' : '↓'}" class="ml-1"></span>
+                        </th>
+                        <th scope="col" class="px-6 py-3 font-medium cursor-pointer hover:bg-gray-200 transition-colors" onclick="sortTable('city')">
+                            City
+                            <span th:if="${sortBy == 'city'}" th:text="${sortDir == 'asc' ? '↑' : '↓'}" class="ml-1"></span>
+                        </th>
+                        <th scope="col" class="px-6 py-3 font-medium cursor-pointer hover:bg-gray-200 transition-colors" onclick="sortTable('country')">
+                            Country
+                            <span th:if="${sortBy == 'country'}" th:text="${sortDir == 'asc' ? '↑' : '↓'}" class="ml-1"></span>
+                        </th>
+                        <th scope="col" class="px-6 py-3 font-medium cursor-pointer hover:bg-gray-200 transition-colors" onclick="sortTable('numRooms')">
+                            Rooms
+                            <span th:if="${sortBy == 'numRooms'}" th:text="${sortDir == 'asc' ? '↑' : '↓'}" class="ml-1"></span>
+                        </th>
+                        <th scope="col" class="px-6 py-3 font-medium cursor-pointer hover:bg-gray-200 transition-colors" onclick="sortTable('starRating')">
+                            Rating
+                            <span th:if="${sortBy == 'starRating'}" th:text="${sortDir == 'asc' ? '↑' : '↓'}" class="ml-1"></span>
+                        </th>
+                        <th scope="col" class="px-6 py-3 font-medium">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(hotels)}" class="bg-white">
+                        <td colspan="6" class="px-6 py-8 text-center text-gray-500">No hotels found</td>
+                    </tr>
+                    <tr th:each="hotel : ${hotels}" class="bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-blue-600 font-bold" th:text="${#strings.substring(hotel.hotelName ?: 'H', 0, 1).toUpperCase()}">H</span>
+                                </div>
+                                <span th:text="${hotel.hotelName}">Hotel Name</span>
+                            </div>
+                        </th>
+                        <td class="px-6 py-4" th:text="${hotel.city ?: 'N/A'}">City</td>
+                        <td class="px-6 py-4" th:text="${hotel.country ?: 'N/A'}">Country</td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                <span th:text="${hotel.numRooms ?: 0}">0</span> rooms
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center text-yellow-400">
+                                <span th:each="i : ${#numbers.sequence(1, hotel.starRating ?: 0)}">★</span>
+                                <span th:each="i : ${#numbers.sequence((hotel.starRating ?: 0) + 1, 5)}">☆</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center space-x-3">
+                                <a th:href="@{/web/hotels/{id}/edit(id=${hotel.hotelCode})}" class="text-blue-600 hover:text-blue-900 hover:underline">Edit</a>
+                                <button th:data-modal-target="'delete-hotel-' + ${hotel.hotelCode}" 
+                                        th:data-modal-toggle="'delete-hotel-' + ${hotel.hotelCode}"
+                                        type="button" 
+                                        class="text-red-600 hover:text-red-900 hover:underline">
+                                    Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <script>
+            // Show skeleton on page load, hide after content loads
+            document.addEventListener('DOMContentLoaded', function() {
+                const skeleton = document.getElementById('table-skeleton');
+                const tableContainer = document.getElementById('hotels-table-container');
+                
+                // Show skeleton initially
+                if (skeleton && tableContainer) {
+                    skeleton.classList.remove('hidden');
+                    tableContainer.style.display = 'none';
+                    
+                    // Hide skeleton and show table after a short delay (simulating load)
+                    setTimeout(function() {
+                        skeleton.classList.add('hidden');
+                        tableContainer.style.display = 'block';
+                    }, 500);
+                }
+            });
+        </script>
+        
+        <!-- Flowbite Pagination -->
+        <div th:if="${pagination != null && pagination.totalPages > 1}" class="mt-6">
+            <nav aria-label="Page navigation">
+                <ul class="flex -space-x-px text-sm">
+                    <li>
+                        <a th:if="${pagination.currentPage > 1}" 
+                           th:href="@{/web/hotels(page=${pagination.currentPage - 1}, search=${search}, sortBy=${sortBy}, sortDir=${sortDir})}" 
+                           class="flex items-center justify-center text-gray-700 bg-gray-100 border border-gray-300 hover:bg-gray-200 hover:text-gray-900 font-medium rounded-l-lg text-sm px-3 h-9 focus:outline-none">Previous</a>
+                        <span th:if="${pagination.currentPage == 1}" 
+                              class="flex items-center justify-center text-gray-400 bg-gray-100 border border-gray-300 font-medium rounded-l-lg text-sm px-3 h-9 cursor-not-allowed">Previous</span>
+                    </li>
+                    <li th:each="i : ${#numbers.sequence(1, pagination.totalPages)}"
+                        th:if="${i <= 5 || i > pagination.totalPages - 2 || (i >= pagination.currentPage - 1 && i <= pagination.currentPage + 1)}">
+                        <a th:href="@{/web/hotels(page=${i}, search=${search}, sortBy=${sortBy}, sortDir=${sortDir})}"
+                           th:class="${i == pagination.currentPage ? 'flex items-center justify-center text-blue-600 bg-gray-200 border border-gray-300 hover:text-blue-600 font-medium text-sm w-9 h-9 focus:outline-none' : 'flex items-center justify-center text-gray-700 bg-gray-100 border border-gray-300 hover:bg-gray-200 hover:text-gray-900 font-medium text-sm w-9 h-9 focus:outline-none'}"
+                           th:attr="aria-current=${i == pagination.currentPage ? 'page' : null}"
+                           th:text="${i}">1</a>
+                    </li>
+                    <li th:if="${pagination.currentPage > 4 && pagination.totalPages > 7}">
+                        <span class="flex items-center justify-center text-gray-700 bg-gray-100 border border-gray-300 font-medium text-sm w-9 h-9">...</span>
+                    </li>
+                    <li>
+                        <a th:if="${pagination.currentPage < pagination.totalPages}" 
+                           th:href="@{/web/hotels(page=${pagination.currentPage + 1}, search=${search}, sortBy=${sortBy}, sortDir=${sortDir})}" 
+                           class="flex items-center justify-center text-gray-700 bg-gray-100 border border-gray-300 hover:bg-gray-200 hover:text-gray-900 font-medium rounded-r-lg text-sm px-3 h-9 focus:outline-none">Next</a>
+                        <span th:if="${pagination.currentPage >= pagination.totalPages}" 
+                              class="flex items-center justify-center text-gray-400 bg-gray-100 border border-gray-300 font-medium rounded-r-lg text-sm px-3 h-9 cursor-not-allowed">Next</span>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    </main>
+    <script src="/js/utils.js"></script>
+    <script>
+        // Sort functionality
+        function sortTable(sortBy) {
+            const currentSortBy = /*[[${sortBy}]]*/ 'hotelName';
+            const currentSortDir = /*[[${sortDir}]]*/ 'asc';
+            const search = document.getElementById('hotel-search')?.value || '';
+            const newSortDir = (currentSortBy === sortBy && currentSortDir === 'asc') ? 'desc' : 'asc';
+            const url = `/web/hotels?page=1&sortBy=${sortBy}&sortDir=${newSortDir}${search ? '&search=' + encodeURIComponent(search) : ''}`;
+            window.location.href = url;
+        }
+
+        // Ensure form always submits with page=1 and removes page from URL
+        document.getElementById('search-form')?.addEventListener('submit', function(e) {
+            // Force page to 1
+            const pageInput = this.querySelector('input[name=page]');
+            if (pageInput) {
+                pageInput.value = '1';
+            }
+            // Update hidden sort inputs from dropdowns
+            const sortBySelect = document.getElementById('sort-by');
+            const sortDirSelect = document.getElementById('sort-dir');
+            const formSortBy = document.getElementById('form-sort-by');
+            const formSortDir = document.getElementById('form-sort-dir');
+            if (sortBySelect && formSortBy) {
+                formSortBy.value = sortBySelect.value;
+            }
+            if (sortDirSelect && formSortDir) {
+                formSortDir.value = sortDirSelect.value;
+            }
+            // Remove any page parameter from the action URL
+            const actionUrl = this.getAttribute('action');
+            if (actionUrl && actionUrl.includes('page=')) {
+                const url = new URL(actionUrl, window.location.origin);
+                url.searchParams.delete('page');
+                this.setAttribute('action', url.pathname + url.search);
+            }
+        });
+
+        // Sort dropdowns - update form hidden inputs and submit
+        document.getElementById('sort-by')?.addEventListener('change', function() {
+            const sortBy = this.value;
+            const sortDir = document.getElementById('sort-dir').value;
+            const search = document.getElementById('hotel-search')?.value || '';
+            const url = `/web/hotels?page=1&sortBy=${sortBy}&sortDir=${sortDir}${search ? '&search=' + encodeURIComponent(search) : ''}`;
+            window.location.href = url;
+        });
+
+        document.getElementById('sort-dir')?.addEventListener('change', function() {
+            const sortDir = this.value;
+            const sortBy = document.getElementById('sort-by').value;
+            const search = document.getElementById('hotel-search')?.value || '';
+            const url = `/web/hotels?page=1&sortBy=${sortBy}&sortDir=${sortDir}${search ? '&search=' + encodeURIComponent(search) : ''}`;
+            window.location.href = url;
+        });
+
+        // Clear search input if no search parameter in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchInput = document.getElementById('hotel-search');
+        if (searchInput && (!urlParams.has('search') || urlParams.get('search') === '')) {
+            searchInput.value = '';
+            // Ensure all rows are visible
+            const rows = document.querySelectorAll('#hotels-table tbody tr:not([data-no-results])');
+            rows.forEach(row => {
+                row.style.display = '';
+            });
+            // Remove any "no results" message
+            const noResultsRow = document.querySelector('#hotels-table tbody tr[data-no-results]');
+            if (noResultsRow) {
+                noResultsRow.remove();
+            }
+        }
+
+        // Client-side search as fallback (debounced) - only filters when user types
+        let searchTimeout;
+        searchInput?.addEventListener('input', function(e) {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                const rows = document.querySelectorAll('#hotels-table tbody tr:not([data-no-results])');
+                
+                // If search is empty, show all rows
+                if (!searchTerm) {
+                    rows.forEach(row => {
+                        row.style.display = '';
+                    });
+                    const noResultsRow = document.querySelector('#hotels-table tbody tr[data-no-results]');
+                    if (noResultsRow) {
+                        noResultsRow.remove();
+                    }
+                    return;
+                }
+                
+                let visibleCount = 0;
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    const shouldShow = text.includes(searchTerm);
+                    row.style.display = shouldShow ? '' : 'none';
+                    if (shouldShow) visibleCount++;
+                });
+                
+                // Show "no results" message if needed
+                const tbody = document.querySelector('#hotels-table tbody');
+                let noResultsRow = tbody.querySelector('tr[data-no-results]');
+                if (visibleCount === 0 && searchTerm && !noResultsRow) {
+                    noResultsRow = document.createElement('tr');
+                    noResultsRow.setAttribute('data-no-results', 'true');
+                    noResultsRow.innerHTML = '<td colspan="6" class="px-6 py-8 text-center text-gray-500">No hotels match your search</td>';
+                    tbody.appendChild(noResultsRow);
+                } else if (noResultsRow && (visibleCount > 0 || !searchTerm)) {
+                    noResultsRow.remove();
+                }
+            }, 300); // Debounce for 300ms
+        });
+
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button')?.addEventListener('click', () => {
+            const menu = document.getElementById('mobile-menu');
+            const iconOpen = document.getElementById('menu-icon-open');
+            const iconClose = document.getElementById('menu-icon-close');
+            menu.classList.toggle('hidden');
+            iconOpen.classList.toggle('hidden');
+            iconClose.classList.toggle('hidden');
+        });
+    </script>
+    
+    <!-- Flowbite for sidebar drawer -->
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+    
+    <!-- Delete Modals -->
+    <div th:each="hotel : ${hotels}">
+        <div th:id="'delete-hotel-' + ${hotel.hotelCode}" 
+             tabindex="-1" 
+             aria-hidden="true" 
+             class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+            <div class="relative p-4 w-full max-w-md max-h-full">
+                <div class="relative bg-white border border-gray-200 rounded-lg shadow-lg p-4 md:p-6">
+                    <div class="flex items-center justify-between border-b border-gray-200 pb-4 md:pb-5 mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Delete Hotel</h3>
+                        <button type="button" 
+                                class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center transition-colors" 
+                                th:data-modal-hide="'delete-hotel-' + ${hotel.hotelCode}">
+                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
+                            </svg>
+                            <span class="sr-only">Close modal</span>
+                        </button>
+                    </div>
+                    <div class="space-y-4 md:space-y-6 py-4 md:py-6">
+                        <p class="leading-relaxed text-gray-700">
+                            Are you sure you want to delete <strong th:text="${hotel.hotelName}">Hotel Name</strong>? This action cannot be undone.
+                        </p>
+                    </div>
+                    <div class="flex items-center border-t border-gray-200 space-x-4 pt-4 md:pt-5">
+                        <form th:action="@{/web/hotels/{id}/delete(id=${hotel.hotelCode})}" method="post" class="inline">
+                            <button type="submit" 
+                                    class="text-white bg-red-600 border border-transparent hover:bg-red-700 focus:ring-4 focus:ring-red-300 shadow-sm font-medium leading-5 rounded-lg text-sm px-4 py-2.5 focus:outline-none">
+                                Delete
+                            </button>
+                        </form>
+                        <button th:data-modal-hide="'delete-hotel-' + ${hotel.hotelCode}" 
+                                type="button" 
+                                class="text-gray-700 bg-gray-100 border border-gray-300 hover:bg-gray-200 hover:text-gray-900 focus:ring-4 focus:ring-gray-200 shadow-sm font-medium leading-5 rounded-lg text-sm px-4 py-2.5 focus:outline-none">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+            </div>
+        </main>
+    </div>
+</body>
+</html>
+

@@ -21,12 +21,15 @@ public class RoomTypeController {
     @GetMapping
     public ResponseEntity<ApiResponse<PayloadResponse<RoomTypeDto>>> getRoomTypes(
             @RequestParam(defaultValue = "1") @Min(value = 1, message = "Page number must be at least 1") int page,
-            @RequestParam(defaultValue = "10") @Min(value = 1, message = "Size must be at least 1") int size
+            @RequestParam(defaultValue = "10") @Min(value = 1, message = "Size must be at least 1") int size,
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "roomType") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir
             ) {
         ApiResponse<PayloadResponse<RoomTypeDto>> roomTypesApiResponse = ApiResponse.<PayloadResponse<RoomTypeDto>>builder()
                 .message("Get room types")
                 .status(HttpStatus.OK)
-                .payload(roomTypeService.findAll(page, size))
+                .payload(roomTypeService.findAll(page, size, search, sortBy, sortDir))
                 .build();
         return ResponseEntity.ok(roomTypesApiResponse);
     }

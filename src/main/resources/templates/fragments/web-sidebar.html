@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <aside th:fragment="sidebar" 
+           id="default-sidebar"
+           class="fixed top-0 left-0 z-40 w-72 h-screen bg-white border-r border-slate-200/60 shadow-sm transition-transform -translate-x-full sm:translate-x-0">
+        <div class="h-full flex flex-col overflow-hidden">
+            <!-- BRAND -->
+            <div class="px-6 py-6 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 shadow-lg shadow-indigo-500/30 flex items-center justify-center transition-transform hover:scale-105">
+                        <i class="fas fa-hotel text-white text-base"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-base font-bold text-slate-900 leading-tight">Hotel Management</h2>
+                        <p class="text-[10px] text-slate-500 font-medium uppercase tracking-wider mt-0.5">Admin Panel</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NAV -->
+            <div class="flex-1 overflow-y-auto px-3 py-4 scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent hover:scrollbar-thumb-slate-400">
+                <ul class="space-y-2">
+                    <!-- Dashboard -->
+                    <li>
+                        <a th:href="@{/web/dashboard}"
+                           th:class="${activePage == 'dashboard' 
+                           ? 'bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 shadow-sm border border-indigo-100/50' 
+                           : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'}"
+                           class="group relative flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 font-medium text-sm">
+                            <i class="fas fa-gauge text-base transition-colors" 
+                               th:class="${activePage == 'dashboard' ? 'text-indigo-600' : 'text-slate-500 group-hover:text-slate-700'}"></i>
+                            <span class="whitespace-nowrap">Dashboard</span>
+                            <span th:if="${activePage == 'dashboard'}" 
+                                  class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-r-full"></span>
+                        </a>
+                    </li>
+
+                    <!-- Hotels -->
+                    <li>
+                        <a th:href="@{/web/hotels}"
+                           th:class="${activePage == 'hotels' 
+                           ? 'bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 shadow-sm border border-indigo-100/50' 
+                           : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'}"
+                           class="group relative flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 font-medium text-sm">
+                            <i class="fas fa-building text-base transition-colors" 
+                               th:class="${activePage == 'hotels' ? 'text-indigo-600' : 'text-slate-500 group-hover:text-slate-700'}"></i>
+                            <span>Hotels</span>
+                            <span th:if="${activePage == 'hotels'}" 
+                                  class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-r-full"></span>
+                        </a>
+                    </li>
+
+                    <!-- Rooms -->
+                    <li>
+                        <a th:href="@{/web/rooms}"
+                           th:class="${activePage == 'rooms' 
+                           ? 'bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 shadow-sm border border-indigo-100/50' 
+                           : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'}"
+                           class="group relative flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 font-medium text-sm">
+                            <i class="fas fa-door-open text-base transition-colors" 
+                               th:class="${activePage == 'rooms' ? 'text-indigo-600' : 'text-slate-500 group-hover:text-slate-700'}"></i>
+                            <span>Rooms</span>
+                            <span th:if="${activePage == 'rooms'}" 
+                                  class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-r-full"></span>
+                        </a>
+                    </li>
+
+                    <!-- Room Types -->
+                    <li>
+                        <a th:href="@{/web/room-types}"
+                           th:class="${activePage == 'room-types' 
+                           ? 'bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 shadow-sm border border-indigo-100/50' 
+                           : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'}"
+                           class="group relative flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 font-medium text-sm">
+                            <i class="fas fa-tags text-base transition-colors" 
+                               th:class="${activePage == 'room-types' ? 'text-indigo-600' : 'text-slate-500 group-hover:text-slate-700'}"></i>
+                            <span>Room Types</span>
+                            <span th:if="${activePage == 'room-types'}" 
+                                  class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-r-full"></span>
+                        </a>
+                    </li>
+
+                    <!-- Bookings -->
+                    <li>
+                        <a th:href="@{/web/bookings}"
+                           th:class="${activePage == 'bookings' 
+                           ? 'bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 shadow-sm border border-indigo-100/50' 
+                           : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'}"
+                           class="group relative flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 font-medium text-sm">
+                            <i class="fas fa-calendar-check text-base transition-colors" 
+                               th:class="${activePage == 'bookings' ? 'text-indigo-600' : 'text-slate-500 group-hover:text-slate-700'}"></i>
+                            <span>Bookings</span>
+                            <span th:if="${activePage == 'bookings'}" 
+                                  class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-r-full"></span>
+                        </a>
+                    </li>
+
+                    <!-- Bills -->
+                    <li>
+                        <a th:href="@{/web/bills}"
+                           th:class="${activePage == 'bills' 
+                           ? 'bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 shadow-sm border border-indigo-100/50' 
+                           : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'}"
+                           class="group relative flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 font-medium text-sm">
+                            <i class="fas fa-file-invoice-dollar text-base transition-colors" 
+                               th:class="${activePage == 'bills' ? 'text-indigo-600' : 'text-slate-500 group-hover:text-slate-700'}"></i>
+                            <span>Bills</span>
+                            <span th:if="${activePage == 'bills'}" 
+                                  class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-r-full"></span>
+                        </a>
+                    </li>
+
+                    <!-- Guests -->
+                    <li>
+                        <a th:href="@{/web/guests}"
+                           th:class="${activePage == 'guests' 
+                           ? 'bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 shadow-sm border border-indigo-100/50' 
+                           : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'}"
+                           class="group relative flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 font-medium text-sm">
+                            <i class="fas fa-users text-base transition-colors" 
+                               th:class="${activePage == 'guests' ? 'text-indigo-600' : 'text-slate-500 group-hover:text-slate-700'}"></i>
+                            <span>Guests</span>
+                            <span th:if="${activePage == 'guests'}" 
+                                  class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-r-full"></span>
+                        </a>
+                    </li>
+
+                    <!-- Employees -->
+                    <li>
+                        <a th:href="@{/web/employees}"
+                           th:class="${activePage == 'employees' 
+                           ? 'bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 shadow-sm border border-indigo-100/50' 
+                           : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'}"
+                           class="group relative flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 font-medium text-sm">
+                            <i class="fas fa-user-tie text-base transition-colors" 
+                               th:class="${activePage == 'employees' ? 'text-indigo-600' : 'text-slate-500 group-hover:text-slate-700'}"></i>
+                            <span>Employees</span>
+                            <span th:if="${activePage == 'employees'}" 
+                                  class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-r-full"></span>
+                        </a>
+                    </li>
+
+                    <!-- Roles -->
+                    <li>
+                        <a th:href="@{/web/roles}"
+                           th:class="${activePage == 'roles' 
+                           ? 'bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 shadow-sm border border-indigo-100/50' 
+                           : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'}"
+                           class="group relative flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 font-medium text-sm">
+                            <i class="fas fa-user-shield text-base transition-colors" 
+                               th:class="${activePage == 'roles' ? 'text-indigo-600' : 'text-slate-500 group-hover:text-slate-700'}"></i>
+                            <span>Roles</span>
+                            <span th:if="${activePage == 'roles'}" 
+                                  class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-r-full"></span>
+                        </a>
+                    </li>
+
+                    <!-- Divider -->
+                    <li class="pt-4 pb-2">
+                        <div class="px-3">
+                            <div class="h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
+                            <p class="px-3 mt-3 text-[10px] font-semibold text-slate-400 uppercase tracking-widest">
+                                User Portal
+                            </p>
+                        </div>
+                    </li>
+
+                    <!-- Browse Hotels -->
+                    <li>
+                        <a th:href="@{/user/hotels}"
+                           th:class="${activePage == 'user-hotels' 
+                           ? 'bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 shadow-sm border border-indigo-100/50' 
+                           : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'}"
+                           class="group relative flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 font-medium text-sm">
+                            <i class="fas fa-search text-base transition-colors" 
+                               th:class="${activePage == 'user-hotels' ? 'text-indigo-600' : 'text-slate-500 group-hover:text-slate-700'}"></i>
+                            <span>Browse Hotels</span>
+                            <span th:if="${activePage == 'user-hotels'}" 
+                                  class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-r-full"></span>
+                        </a>
+                    </li>
+
+                    <!-- Book a Room -->
+                    <li>
+                        <a th:href="@{/user/booking}"
+                           th:class="${activePage == 'user-booking' 
+                           ? 'bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 shadow-sm border border-indigo-100/50' 
+                           : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'}"
+                           class="group relative flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 font-medium text-sm">
+                            <i class="fas fa-calendar-plus text-base transition-colors" 
+                               th:class="${activePage == 'user-booking' ? 'text-indigo-600' : 'text-slate-500 group-hover:text-slate-700'}"></i>
+                            <span>Book a Room</span>
+                            <span th:if="${activePage == 'user-booking'}" 
+                                  class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-r-full"></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Logout -->
+            <div class="px-3 py-4 border-t border-slate-100">
+                <a th:href="@{/login/logout}"
+                   class="group flex items-center gap-3 px-4 py-3 rounded-lg text-rose-600 hover:bg-rose-50 hover:text-rose-700 transition-all duration-200 font-medium text-sm">
+                    <i class="fas fa-right-from-bracket text-base transition-transform group-hover:-translate-x-0.5"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+    </aside>
+</body>
+</html>

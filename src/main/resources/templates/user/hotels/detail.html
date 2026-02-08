@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${pageTitle ?: 'Hotel Details - Hotel Management'}">Hotel Details - Hotel Management</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <a th:href="@{/user/hotels}" class="text-blue-600 hover:text-blue-800 hover:underline flex items-center mb-2">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        Back to Hotels
+                    </a>
+                    <h1 class="text-2xl font-bold text-gray-900" th:text="${hotel != null ? (hotel.hotelName ?: 'Hotel') : 'Hotel'}">Hotel Name</h1>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div th:if="${hotel == null}" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+            <p class="text-gray-500">Hotel not found.</p>
+            <a th:href="@{/user/hotels}" class="text-blue-600 hover:underline mt-4 inline-block">Back to Hotels</a>
+        </div>
+    </div>
+
+    <div th:if="${hotel != null}" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Hotel Images Gallery -->
+        <div th:if="${images != null && !#lists.isEmpty(images)}" class="mb-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div th:each="image, iterStat : ${images}" 
+                     th:class="${iterStat.first ? 'sm:col-span-2 sm:row-span-2' : ''}"
+                     class="relative group cursor-pointer overflow-hidden rounded-lg border border-gray-200 bg-gray-50"
+                     th:style="${iterStat.first ? 'min-height: 400px; max-height: 500px;' : 'min-height: 200px; max-height: 250px;'}">
+                    <img th:src="@{'/uploads/' + ${image.filePath}}" 
+                         th:alt="${image.fileName ?: 'Hotel Image'}"
+                         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                         th:attr="onclick='openImageModal(\'/uploads/' + ${image.filePath} + '\')'"
+                         onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'w-full h-full flex items-center justify-center bg-gray-100 text-gray-400\'><p>Image not found</p></div>';">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div th:if="${images == null || #lists.isEmpty(images)}" class="mb-8">
+            <div class="h-96 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
+                <div class="text-center">
+                    <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <span class="text-4xl font-bold text-blue-600 block mb-2" th:text="${#strings.substring((hotel.hotelName ?: 'H'), 0, 1).toUpperCase()}">H</span>
+                    <p class="text-sm text-gray-600">No images available</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Content -->
+            <div class="lg:col-span-2">
+                <!-- Hotel Information -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">About This Hotel</h2>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 text-gray-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            <div>
+                                <p class="font-medium text-gray-900">Address</p>
+                                <p class="text-gray-600" th:text="${hotel.address ?: 'N/A'}">Address</p>
+                                <p class="text-gray-600">
+                                    <span th:if="${hotel.city != null}" th:text="${hotel.city}">City</span>
+                                    <span th:if="${hotel.city != null && hotel.country != null}">, </span>
+                                    <span th:if="${hotel.country != null}" th:text="${hotel.country}">Country</span>
+                                    <span th:if="${hotel.postcode != null && !hotel.postcode.isEmpty()}"> <span th:text="${hotel.postcode}">Postcode</span></span>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div th:if="${hotel.phoneNo != null && !hotel.phoneNo.isEmpty()}" class="flex items-start">
+                            <svg class="w-5 h-5 text-gray-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                            </svg>
+                            <div>
+                                <p class="font-medium text-gray-900">Phone</p>
+                                <p class="text-gray-600" th:text="${hotel.phoneNo}">Phone Number</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-start">
+                            <svg class="w-5 h-5 text-gray-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                            </svg>
+                            <div>
+                                <p class="font-medium text-gray-900">Total Rooms</p>
+                                <p class="text-gray-600">
+                                    <span th:text="${hotel.numRooms != null ? hotel.numRooms : 0}">0</span> rooms available
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div th:if="${hotel.starRating != null && hotel.starRating > 0}" class="flex items-start">
+                            <svg class="w-5 h-5 text-gray-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                            </svg>
+                            <div>
+                                <p class="font-medium text-gray-900">Star Rating</p>
+                                <div class="flex items-center text-yellow-400">
+                                    <span th:each="i : ${#numbers.sequence(1, hotel.starRating)}">★</span>
+                                    <span th:if="${hotel.starRating < 5}" th:each="i : ${#numbers.sequence(hotel.starRating + 1, 5)}">☆</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Available Rooms -->
+                <div th:if="${rooms != null && !#lists.isEmpty(rooms)}" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Available Rooms</h2>
+                    <div class="space-y-4">
+                        <div th:each="room : ${rooms}" class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="font-semibold text-gray-900" th:text="${room.roomNo ?: 'N/A'}">Room Number</h3>
+                                    <p class="text-sm text-gray-600" th:text="${(room.roomType != null && room.roomType.roomType != null) ? room.roomType.roomType : 'N/A'}">Room Type</p>
+                                    <p th:if="${room.occupancy != null && !room.occupancy.isEmpty()}" class="text-sm text-gray-600 mt-1" th:text="${'Occupancy: ' + room.occupancy}">Occupancy</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${rooms == null || #lists.isEmpty(rooms)}" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Available Rooms</h2>
+                    <p class="text-gray-500">No rooms available for this hotel yet.</p>
+                </div>
+            </div>
+
+            <!-- Booking Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-4">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">Book This Hotel</h2>
+                    <p class="text-gray-600 text-sm mb-6">Ready to book your stay? Click below to proceed with your reservation.</p>
+                    <a th:href="@{/user/booking(hotelId=${hotel.hotelCode})}" 
+                       class="block w-full text-center text-white bg-blue-600 border border-transparent hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 shadow-sm font-medium leading-5 rounded-lg text-sm px-4 py-3 focus:outline-none mb-4">
+                        Book Now
+                    </a>
+                    <div class="text-center text-sm text-gray-500">
+                        <p>No payment required</p>
+                        <p>Free cancellation</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75" onclick="closeImageModal()">
+        <div class="max-w-4xl max-h-full p-4 relative" onclick="event.stopPropagation()">
+            <img id="modalImage" src="" alt="Full size image" class="max-w-full max-h-screen rounded-lg shadow-2xl">
+            <button onclick="closeImageModal()" class="absolute top-4 right-4 text-white bg-gray-800 hover:bg-gray-700 rounded-full p-2 z-10 shadow-lg">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function openImageModal(imageSrc) {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            if (modal && modalImage) {
+                modalImage.src = imageSrc;
+                modal.classList.remove('hidden');
+            }
+        }
+        
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        }
+        
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeImageModal();
+            }
+        });
+    </script>
+</body>
+</html>

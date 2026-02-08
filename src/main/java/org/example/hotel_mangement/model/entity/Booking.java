@@ -71,4 +71,8 @@ public class Booking {
     @OneToMany(mappedBy = "booking")
     @JsonIgnore
     private List<Bill> bills;
+
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<org.example.hotel_mangement.model.entity.BookingImage> images;
 }

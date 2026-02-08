@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${pageTitle ?: 'Hotel Form - Hotel Management'}">Hotel Form - Hotel Management</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="bg-gray-50">
+    <div th:replace="~{fragments/nav :: navigation}"></div>
+    <main class="min-h-screen">
+        <div class="p-6 animate-fade-in">
+        <div class="max-w-2xl mx-auto">
+            <div class="mb-6">
+                <h1 class="text-3xl font-bold text-gray-800" th:text="${hotelId != null ? 'Edit Hotel' : 'Add Hotel'}">Add Hotel</h1>
+                <p class="text-gray-600 mt-1" th:text="${hotelId != null ? 'Update hotel information' : 'Create a new hotel property'}">Create a new hotel property</p>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <form th:action="${hotelId != null ? '/hotels/' + hotelId : '/hotels'}" 
+                      method="post">
+                    <div class="space-y-6">
+                        <div>
+                            <label for="hotelName" class="block text-sm font-medium text-gray-700 mb-2">Hotel Name *</label>
+                            <input type="text" 
+                                   id="hotelName" 
+                                   name="hotelName" 
+                                   th:value="${hotel.hotelName}"
+                                   required
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label for="address" class="block text-sm font-medium text-gray-700 mb-2">Address *</label>
+                            <input type="text" 
+                                   id="address" 
+                                   name="address" 
+                                   th:value="${hotel.address}"
+                                   required
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="postcode" class="block text-sm font-medium text-gray-700 mb-2">Postcode</label>
+                                <input type="text" 
+                                       id="postcode" 
+                                       name="postcode" 
+                                       th:value="${hotel.postcode}"
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                            
+                            <div>
+                                <label for="city" class="block text-sm font-medium text-gray-700 mb-2">City *</label>
+                                <input type="text" 
+                                       id="city" 
+                                       name="city" 
+                                       th:value="${hotel.city}"
+                                       required
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="country" class="block text-sm font-medium text-gray-700 mb-2">Country *</label>
+                            <input type="text" 
+                                   id="country" 
+                                   name="country" 
+                                   th:value="${hotel.country}"
+                                   required
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="numRooms" class="block text-sm font-medium text-gray-700 mb-2">Number of Rooms</label>
+                                <input type="number" 
+                                       id="numRooms" 
+                                       name="numRooms" 
+                                       th:value="${hotel.numRooms}"
+                                       min="0"
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            </div>
+                            
+                            <div>
+                                <label for="starRating" class="block text-sm font-medium text-gray-700 mb-2">Star Rating</label>
+                                <select id="starRating" 
+                                        name="starRating" 
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <option value="">Select rating</option>
+                                    <option th:each="i : ${#numbers.sequence(1, 5)}" 
+                                            th:value="${i}" 
+                                            th:selected="${hotel.starRating == i}"
+                                            th:text="${i + ' Star' + (i > 1 ? 's' : '')}">1 Star</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="phoneNo" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                            <input type="tel" 
+                                   id="phoneNo" 
+                                   name="phoneNo" 
+                                   th:value="${hotel.phoneNo}"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 flex justify-end space-x-4">
+                        <a th:href="@{/hotels}" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">Cancel</a>
+                        <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                            <span th:text="${hotelId != null ? 'Update Hotel' : 'Create Hotel'}">Create Hotel</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+    <script src="/js/utils.js"></script>
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button')?.addEventListener('click', () => {
+            const menu = document.getElementById('mobile-menu');
+            const iconOpen = document.getElementById('menu-icon-open');
+            const iconClose = document.getElementById('menu-icon-close');
+            menu.classList.toggle('hidden');
+            iconOpen.classList.toggle('hidden');
+            iconClose.classList.toggle('hidden');
+        });
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.add('hidden');
+                document.getElementById('menu-icon-open').classList.remove('hidden');
+                document.getElementById('menu-icon-close').classList.add('hidden');
+            });
+        });
+    </script>
+</body>
+</html>
+

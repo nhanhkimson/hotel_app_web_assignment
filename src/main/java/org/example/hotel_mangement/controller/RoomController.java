@@ -1,7 +1,7 @@
 package org.example.hotel_mangement.controller;
 
-import jakarta.validation.constraints.Min;
-import lombok.RequiredArgsConstructor;
+import java.util.UUID;
+
 import org.example.hotel_mangement.model.dto.RoomDTO;
 import org.example.hotel_mangement.model.request.RoomRequest;
 import org.example.hotel_mangement.model.response.ApiResponse;
@@ -9,9 +9,18 @@ import org.example.hotel_mangement.model.response.PayloadResponse;
 import org.example.hotel_mangement.service.RoomService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
+import jakarta.validation.constraints.Min;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,12 +31,15 @@ public class RoomController {
     @GetMapping
     public ResponseEntity<ApiResponse<PayloadResponse<RoomDTO>>> getRooms(
             @RequestParam(defaultValue = "1") @Min(value = 1, message = "Page number must be at least 1") int page,
-            @RequestParam(defaultValue = "10") @Min(value = 1, message = "Size must be at least 1") int size
+            @RequestParam(defaultValue = "10") @Min(value = 1, message = "Size must be at least 1") int size,
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "roomNo") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir
     ) {
         ApiResponse<PayloadResponse<RoomDTO>> roomsApiResponse = ApiResponse.<PayloadResponse<RoomDTO>>builder()
                 .message("Get rooms")
                 .status(HttpStatus.OK)
-                .payload(roomService.findAll(page, size))
+                .payload(roomService.findAll(page, size, search, sortBy, sortDir))
                 .build();
         return ResponseEntity.ok(roomsApiResponse);
     }

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <!-- Card Skeleton (Image + Text) -->
+    <div th:fragment="cardSkeleton" role="status" class="space-y-8 animate-pulse md:space-y-0 md:space-x-8 rtl:space-x-reverse md:flex md:items-center">
+        <div class="flex items-center justify-center w-full h-48 bg-gray-200 rounded-lg sm:w-96">
+            <svg class="w-11 h-11 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m3 16 5-7 6 6.5m6.5 2.5L16 13l-4.286 6M14 10h.01M4 19h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z"/>
+            </svg>
+        </div>
+        <div class="w-full">
+            <div class="h-2.5 bg-gray-200 rounded-full w-48 mb-4"></div>
+            <div class="h-2 bg-gray-200 rounded-full max-w-[480px] mb-2.5"></div>
+            <div class="h-2 bg-gray-200 rounded-full mb-2.5"></div>
+            <div class="h-2 bg-gray-200 rounded-full max-w-[440px] mb-2.5"></div>
+            <div class="h-2 bg-gray-200 rounded-full max-w-[460px] mb-2.5"></div>
+            <div class="h-2 bg-gray-200 rounded-full max-w-[360px]"></div>
+        </div>
+        <span class="sr-only">Loading...</span>
+    </div>
+    
+    <!-- Table Skeleton -->
+    <div th:fragment="tableSkeleton(rows, cols)" role="status" class="animate-pulse">
+        <div class="relative overflow-x-auto bg-gray-50 shadow-sm rounded-lg border border-gray-200">
+            <table class="w-full text-sm text-left text-gray-700">
+                <thead class="text-sm text-gray-700 bg-gray-100 border-b border-gray-200">
+                    <tr>
+                        <th th:each="i : ${#numbers.sequence(1, cols)}" scope="col" class="px-6 py-3">
+                            <div class="h-4 bg-gray-300 rounded w-24"></div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="row : ${#numbers.sequence(1, rows)}" class="bg-white border-b border-gray-200">
+                        <td th:each="col : ${#numbers.sequence(1, cols)}" class="px-6 py-4">
+                            <div class="h-4 bg-gray-200 rounded" th:classappend="${col == 1 ? 'w-3/4' : 'w-full'}"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <span class="sr-only">Loading...</span>
+    </div>
+    
+    <!-- Dashboard Card Skeleton -->
+    <div th:fragment="dashboardCardSkeleton" class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 animate-pulse">
+        <div class="flex items-center justify-between">
+            <div class="w-full">
+                <div class="h-4 bg-gray-200 rounded w-24 mb-2"></div>
+                <div class="h-8 bg-gray-200 rounded w-16"></div>
+            </div>
+            <div class="w-12 h-12 bg-gray-200 rounded-lg"></div>
+        </div>
+    </div>
+    
+    <!-- List Item Skeleton -->
+    <div th:fragment="listItemSkeleton" class="animate-pulse">
+        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+            <div class="flex-1">
+                <div class="h-4 bg-gray-200 rounded w-32 mb-2"></div>
+                <div class="h-3 bg-gray-200 rounded w-24"></div>
+            </div>
+            <div class="h-3 bg-gray-200 rounded w-16"></div>
+        </div>
+    </div>
+</body>
+</html>
+
+

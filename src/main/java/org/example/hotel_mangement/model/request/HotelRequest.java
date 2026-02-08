@@ -16,3 +16,4 @@ public class HotelRequest {
     private Integer starRating;
 }
 
+

@@ -19,3 +19,4 @@ public class HotelDTO {
     private Integer starRating;
 }
 
+

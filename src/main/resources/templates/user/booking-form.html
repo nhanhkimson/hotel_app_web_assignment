@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Book a Room - Hotel Management</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="bg-gray-50 min-h-screen py-8">
+    <div class="max-w-4xl mx-auto px-4">
+        <!-- Navigation Links -->
+        <div class="mb-4 flex items-center justify-between">
+            <a th:href="@{/user/hotels}" 
+               class="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                <span>Browse Hotels</span>
+            </a>
+            <a th:href="@{/web/dashboard}" 
+               class="text-sm text-gray-600 hover:text-gray-800 hover:underline">
+                Admin Dashboard
+            </a>
+        </div>
+        
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Book Your Stay</h1>
+            <p class="text-gray-600">Fill in the details below to make your reservation</p>
+        </div>
+
+        <!-- Success/Error Messages -->
+        <div th:if="${success}" class="mb-5 p-4 bg-green-100 border border-green-200 rounded-lg">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11.917 9.724 16.5 19 7.5"/>
+                </svg>
+                <p class="text-sm font-medium text-green-700" th:text="${success}">Booking created successfully!</p>
+            </div>
+        </div>
+
+        <div th:if="${error}" class="mb-5 p-4 bg-red-100 border border-red-200 rounded-lg">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
+                </svg>
+                <p class="text-sm font-medium text-red-700" th:text="${error}">Error creating booking.</p>
+            </div>
+        </div>
+
+        <!-- Booking Form -->
+        <div class="bg-white block p-6 border border-gray-200 rounded-lg shadow-sm">
+            <form th:action="@{/user/booking}" method="post" enctype="multipart/form-data" class="space-y-5">
+                <!-- Hotel Selection -->
+                <div>
+                    <label for="hotelCode" class="block mb-2.5 text-sm font-medium text-gray-900">Hotel *</label>
+                    <select id="hotelCode" name="hotelCode" required 
+                            class="block w-full px-3 py-2.5 bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+                            onchange="showHotelImages(this.value); updateRooms(this.value);"
+                            th:attr="data-selected=${selectedHotelId}">
+                        <option value="">Select Hotel</option>
+                        <option th:each="hotel : ${hotels}" 
+                                th:value="${hotel.hotelCode}" 
+                                th:data-hotel-name="${hotel.hotelName}"
+                                th:selected="${selectedHotelId != null && selectedHotelId.equals(hotel.hotelCode)}"
+                                th:text="${hotel.hotelName + ' - ' + hotel.city + ', ' + hotel.country}">
+                            Hotel Name
+                        </option>
+                    </select>
+                    <p th:if="${selectedHotelId != null}" class="mt-2 text-sm text-blue-600">
+                        <a th:href="@{/user/hotels/{id}(id=${selectedHotelId})}" class="hover:underline">View hotel details</a>
+                    </p>
+                </div>
+                
+                <!-- Hotel Images Display -->
+                <div id="hotelImagesContainer" class="hidden">
+                    <label class="block mb-2.5 text-sm font-medium text-gray-900">Hotel Images</label>
+                    <div id="hotelImages" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <!-- Hotel images will be displayed here -->
+                    </div>
+                </div>
+
+                <!-- Room Selection -->
+                <div>
+                    <label for="roomId" class="block mb-2.5 text-sm font-medium text-gray-900">Room *</label>
+                    <select id="roomId" name="roomId" required 
+                            class="block w-full px-3 py-2.5 bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm">
+                        <option value="">Select Room</option>
+                        <option th:each="room : ${rooms}" 
+                                th:value="${room.roomId}" 
+                                th:text="${room.roomNo + ' - ' + (room.roomType != null ? room.roomType.roomType : 'N/A')}">
+                            Room Number
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Dates -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="arrivalDate" class="block mb-2.5 text-sm font-medium text-gray-900">Arrival Date *</label>
+                        <div class="relative max-w-sm">
+                            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                                <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z"/>
+                                </svg>
+                            </div>
+                            <input id="arrivalDate" name="arrivalDate" type="date" required 
+                                   class="block w-full ps-9 pe-3 py-2.5 bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="departureDate" class="block mb-2.5 text-sm font-medium text-gray-900">Departure Date *</label>
+                        <div class="relative max-w-sm">
+                            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                                <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z"/>
+                                </svg>
+                            </div>
+                            <input id="departureDate" name="departureDate" type="date" required 
+                                   class="block w-full ps-9 pe-3 py-2.5 bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Guest Information -->
+                <div class="border-t border-gray-200 pt-5">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Guest Information</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="firstName" class="block mb-2.5 text-sm font-medium text-gray-900">First Name *</label>
+                            <input type="text" id="firstName" name="firstName" required 
+                                   class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-3 py-2.5 shadow-sm placeholder:text-gray-500">
+                        </div>
+                        <div>
+                            <label for="lastName" class="block mb-2.5 text-sm font-medium text-gray-900">Last Name *</label>
+                            <input type="text" id="lastName" name="lastName" required 
+                                   class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-3 py-2.5 shadow-sm placeholder:text-gray-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <label for="email" class="block mb-2.5 text-sm font-medium text-gray-900">Email *</label>
+                            <input type="email" id="email" name="email" required 
+                                   class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-3 py-2.5 shadow-sm placeholder:text-gray-500">
+                        </div>
+                        <div>
+                            <label for="phoneNo" class="block mb-2.5 text-sm font-medium text-gray-900">Phone Number *</label>
+                            <input type="tel" id="phoneNo" name="phoneNo" required 
+                                   class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-3 py-2.5 shadow-sm placeholder:text-gray-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                        <div>
+                            <label for="address" class="block mb-2.5 text-sm font-medium text-gray-900">Address</label>
+                            <input type="text" id="address" name="address" 
+                                   class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-3 py-2.5 shadow-sm placeholder:text-gray-500">
+                        </div>
+                        <div>
+                            <label for="city" class="block mb-2.5 text-sm font-medium text-gray-900">City</label>
+                            <input type="text" id="city" name="city" 
+                                   class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-3 py-2.5 shadow-sm placeholder:text-gray-500">
+                        </div>
+                        <div>
+                            <label for="country" class="block mb-2.5 text-sm font-medium text-gray-900">Country</label>
+                            <input type="text" id="country" name="country" 
+                                   class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-3 py-2.5 shadow-sm placeholder:text-gray-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Occupancy -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="numAdults" class="block mb-2.5 text-sm font-medium text-gray-900">Number of Adults</label>
+                        <input type="number" id="numAdults" name="numAdults" min="1" value="1" 
+                               class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-3 py-2.5 shadow-sm">
+                    </div>
+                    <div>
+                        <label for="numChildren" class="block mb-2.5 text-sm font-medium text-gray-900">Number of Children</label>
+                        <input type="number" id="numChildren" name="numChildren" min="0" value="0" 
+                               class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-3 py-2.5 shadow-sm">
+                    </div>
+                </div>
+
+                <!-- Special Requirements -->
+                <div>
+                    <label for="specialReq" class="block mb-2.5 text-sm font-medium text-gray-900">Special Requirements</label>
+                    <textarea id="specialReq" name="specialReq" rows="3" 
+                              class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-3 py-2.5 shadow-sm placeholder:text-gray-500"
+                              placeholder="Any special requests or requirements..."></textarea>
+                </div>
+
+                <!-- Image Upload Section -->
+                <div class="border-t border-gray-200 pt-5">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Upload Images</h3>
+                    <div class="mb-4">
+                        <label for="images" class="block mb-2.5 text-sm font-medium text-gray-900">Select Images (Multiple files allowed)</label>
+                        <input type="file" id="images" name="images" multiple accept="image/*" 
+                               class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-3 py-2.5 shadow-sm"
+                               onchange="previewImages(this)">
+                    </div>
+                    
+                    <!-- Image Preview Container -->
+                    <div id="imagePreview" class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                        <!-- Preview images will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-end space-x-4 pt-4 border-t border-gray-200">
+                    <button type="reset" 
+                            class="text-gray-700 bg-gray-100 border border-gray-300 hover:bg-gray-200 hover:text-gray-900 focus:ring-4 focus:ring-gray-200 shadow-sm font-medium leading-5 rounded-lg text-sm px-4 py-2.5 focus:outline-none">
+                        Reset
+                    </button>
+                    <button type="submit" 
+                            class="text-white bg-blue-600 border border-transparent hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 shadow-sm font-medium leading-5 rounded-lg text-sm px-4 py-2.5 focus:outline-none">
+                        Submit Booking
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Hotel images data from server
+        const hotelImagesMap = /*[[${hotelImagesMap}]]*/ {};
+        const allRooms = /*[[${rooms}]]*/ [];
+        const hotelRooms = /*[[${hotelRooms}]]*/ null;
+        
+        // Pre-select hotel if provided
+        document.addEventListener('DOMContentLoaded', function() {
+            const hotelSelect = document.getElementById('hotelCode');
+            const selectedHotelId = hotelSelect.getAttribute('data-selected');
+            if (selectedHotelId) {
+                hotelSelect.value = selectedHotelId;
+                showHotelImages(selectedHotelId);
+                updateRooms(selectedHotelId);
+            }
+        });
+        
+        function updateRooms(hotelCode) {
+            const roomSelect = document.getElementById('roomId');
+            roomSelect.innerHTML = '<option value="">Select Room</option>';
+            
+            if (!hotelCode) {
+                // Show all rooms if no hotel selected
+                allRooms.forEach(room => {
+                    const option = document.createElement('option');
+                    option.value = room.roomId;
+                    option.textContent = room.roomNo + ' - ' + (room.roomType ? room.roomType.roomType : 'N/A');
+                    roomSelect.appendChild(option);
+                });
+                return;
+            }
+            
+            // Filter rooms by hotel (client-side filtering)
+            const filteredRooms = allRooms.filter(room => room.hotel && room.hotel.hotelCode === hotelCode);
+            filteredRooms.forEach(room => {
+                const option = document.createElement('option');
+                option.value = room.roomId;
+                option.textContent = room.roomNo + ' - ' + (room.roomType ? room.roomType.roomType : 'N/A');
+                roomSelect.appendChild(option);
+            });
+        }
+        
+        function showHotelImages(hotelCode) {
+            const container = document.getElementById('hotelImagesContainer');
+            const imagesDiv = document.getElementById('hotelImages');
+            
+            if (!hotelCode || !hotelImagesMap[hotelCode] || hotelImagesMap[hotelCode].length === 0) {
+                container.classList.add('hidden');
+                return;
+            }
+            
+            container.classList.remove('hidden');
+            imagesDiv.innerHTML = '';
+            
+            const images = hotelImagesMap[hotelCode];
+            images.forEach(image => {
+                const div = document.createElement('div');
+                div.className = 'relative group cursor-pointer';
+                div.innerHTML = `
+                    <img src="/uploads/${image.filePath}" 
+                         alt="${image.fileName || 'Hotel Image'}"
+                         class="w-full h-32 object-cover rounded-lg border border-gray-200 hover:shadow-lg transition-shadow"
+                         onclick="openImageModal('/uploads/${image.filePath}')">
+                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-lg transition-opacity"></div>
+                `;
+                imagesDiv.appendChild(div);
+            });
+        }
+        
+        function openImageModal(imageSrc) {
+            const modal = document.createElement('div');
+            modal.id = 'imageModal';
+            modal.className = 'fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75';
+            modal.onclick = function() { closeImageModal(); };
+            modal.innerHTML = `
+                <div class="max-w-4xl max-h-full p-4">
+                    <img src="${imageSrc}" alt="Full size image" class="max-w-full max-h-screen rounded-lg">
+                    <button onclick="closeImageModal()" class="absolute top-4 right-4 text-white bg-gray-800 hover:bg-gray-700 rounded-full p-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6"/>
+                        </svg>
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        function previewImages(input) {
+            const previewContainer = document.getElementById('imagePreview');
+            previewContainer.innerHTML = '';
+
+            if (input.files && input.files.length > 0) {
+                Array.from(input.files).forEach((file, index) => {
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const div = document.createElement('div');
+                            div.className = 'relative group';
+                            div.innerHTML = `
+                                <img src="${e.target.result}" alt="Preview ${index + 1}" 
+                                     class="w-full h-32 object-cover rounded-lg border border-gray-200">
+                                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 rounded-lg transition-opacity flex items-center justify-center">
+                                    <span class="text-white text-xs opacity-0 group-hover:opacity-100">${file.name}</span>
+                                </div>
+                            `;
+                            previewContainer.appendChild(div);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        }
+        
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeImageModal();
+            }
+        });
+        
+        // Initialize date pickers with validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const arrivalInput = document.getElementById('arrivalDate');
+            const departureInput = document.getElementById('departureDate');
+            
+            // Set minimum date to today
+            const today = new Date().toISOString().split('T')[0];
+            arrivalInput.min = today;
+            departureInput.min = today;
+            
+            // Update departure date when arrival date changes
+            arrivalInput.addEventListener('change', function() {
+                if (this.value) {
+                    const arrivalDate = new Date(this.value);
+                    const nextDay = new Date(arrivalDate);
+                    nextDay.setDate(nextDay.getDate() + 1);
+                    
+                    // Set minimum departure date to day after arrival
+                    departureInput.min = this.value;
+                    
+                    // Auto-set departure date if not set or if it's before/equal to arrival
+                    if (!departureInput.value || departureInput.value <= this.value) {
+                        departureInput.value = nextDay.toISOString().split('T')[0];
+                    }
+                }
+            });
+            
+            // Ensure departure date is always after arrival date
+            departureInput.addEventListener('change', function() {
+                if (arrivalInput.value && this.value && this.value <= arrivalInput.value) {
+                    const arrivalDate = new Date(arrivalInput.value);
+                    const nextDay = new Date(arrivalDate);
+                    nextDay.setDate(nextDay.getDate() + 1);
+                    this.value = nextDay.toISOString().split('T')[0];
+                    alert('Departure date must be after arrival date. It has been adjusted.');
+                }
+            });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+</body>
+</html>
+

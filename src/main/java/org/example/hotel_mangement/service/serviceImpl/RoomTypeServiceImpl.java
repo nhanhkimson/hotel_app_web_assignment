@@ -11,6 +11,7 @@ import org.example.hotel_mangement.repository.RoomTypeRepository;
 import org.example.hotel_mangement.service.RoomTypeService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,22 +23,43 @@ import java.util.UUID;
 public class RoomTypeServiceImpl implements RoomTypeService {
     private final RoomTypeRepository roomTypeRepository;
     @Override
-    public PayloadResponse<RoomTypeDto> findAll(int page, int size) {
-        PageRequest pageable = PageRequest.of(page -1, size);
-        Page<RoomType> roomTypes = roomTypeRepository.findAll(pageable);
+    public PayloadResponse<RoomTypeDto> findAll(int page, int size, String search, String sortBy, String sortDir) {
+        Sort sort = createSort(sortBy, sortDir);
+        PageRequest pageable = PageRequest.of(page - 1, size, sort);
+        
+        Page<RoomType> roomTypes;
+        if (search != null && !search.trim().isEmpty()) {
+            roomTypes = roomTypeRepository.searchRoomTypes(search.trim(), pageable);
+        } else {
+            roomTypes = roomTypeRepository.findAll(pageable);
+        }
 
         List<RoomTypeDto> roomTypeDto = new ArrayList<>();
-        if (roomTypes.isEmpty()) {
-            throw new NotFoundException("Room Type not enough with page " + page + ".");
-        }
-        for (RoomType roomType : roomTypes) {
-            roomTypeDto.add(toDTO(roomType));
+        if (!roomTypes.isEmpty()) {
+            for (RoomType roomType : roomTypes) {
+                roomTypeDto.add(toDTO(roomType));
+            }
         }
 
         return PayloadResponse.<RoomTypeDto>builder()
                 .items(roomTypeDto)
                 .pagination(PaginationResponse.fromPage(roomTypes, page, size))
                 .build();
+    }
+    
+    private Sort createSort(String sortBy, String sortDir) {
+        Sort.Direction direction = "desc".equalsIgnoreCase(sortDir) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        String fieldName = mapSortField(sortBy);
+        return Sort.by(direction, fieldName);
+    }
+    
+    private String mapSortField(String sortBy) {
+        switch (sortBy) {
+            case "roomType": return "roomType";
+            case "roomPrice": return "roomPrice";
+            case "roomDesc": return "roomDesc";
+            default: return "roomType";
+        }
     }
 
     @Override

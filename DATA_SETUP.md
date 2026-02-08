@@ -154,3 +154,4 @@ If you're re-running the scripts, you may need to clear existing data first. Unc
 - Prices are in USD (convert as needed)
 - The data generator uses random selection, so exact counts may vary slightly
 
+

@@ -105,3 +105,4 @@ Then run the scripts again.
 - `data-generator.sql` - Dynamic data with relationships (Rooms, Employees, Bookings, Bills)
 - `run-data-script.sh` - Automated script to run everything
 
+

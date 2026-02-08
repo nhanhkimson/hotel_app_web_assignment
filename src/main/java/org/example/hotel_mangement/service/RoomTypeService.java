@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface RoomTypeService {
-    PayloadResponse<RoomTypeDto> findAll(int page, int size);
+    PayloadResponse<RoomTypeDto> findAll(int page, int size, String search, String sortBy, String sortDir);
     RoomTypeDto findRoomTypeById(UUID id);
     RoomTypeDto saveRoomType(RoomTypeRequest roomTypeRequest);
     RoomTypeDto updateRoomType(UUID id ,RoomTypeRequest roomTypeRequest);

@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class WebController {
-    @RequestMapping({"/", "/index", "/index.html", "/dashboard"})
+    @RequestMapping({"/", "/index", "/index.html"})
     public String index() {
-        return "index.html";
+        return "redirect:/web/dashboard";
     }
 
     @RequestMapping("/welcome")

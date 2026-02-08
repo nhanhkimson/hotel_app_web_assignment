@@ -69,3 +69,4 @@ SELECT 'Bills', COUNT(*) FROM bill;
 echo ""
 echo "Done! Your database is now populated with sample data."
 
+

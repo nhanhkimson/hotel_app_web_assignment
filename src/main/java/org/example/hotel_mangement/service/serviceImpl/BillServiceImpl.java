@@ -15,6 +15,7 @@ import org.example.hotel_mangement.repository.GuestRepository;
 import org.example.hotel_mangement.service.BillService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,22 +30,43 @@ public class BillServiceImpl implements BillService {
     private final GuestRepository guestRepository;
 
     @Override
-    public PayloadResponse<BillDTO> findAll(int page, int size) {
-        PageRequest pageable = PageRequest.of(page - 1, size);
-        Page<Bill> bills = billRepository.findAllWithRelations(pageable);
+    public PayloadResponse<BillDTO> findAll(int page, int size, String search, String sortBy, String sortDir) {
+        Sort sort = createSort(sortBy, sortDir);
+        PageRequest pageable = PageRequest.of(page - 1, size, sort);
+        
+        Page<Bill> bills;
+        if (search != null && !search.trim().isEmpty()) {
+            bills = billRepository.searchBills(search.trim(), pageable);
+        } else {
+            bills = billRepository.findAllWithRelations(pageable);
+        }
 
         List<BillDTO> billDTOs = new ArrayList<>();
-        if (bills.isEmpty()) {
-            throw new NotFoundException("Bill not enough with page " + page + ".");
-        }
-        for (Bill bill : bills) {
-            billDTOs.add(toDTO(bill));
+        if (!bills.isEmpty()) {
+            for (Bill bill : bills) {
+                billDTOs.add(toDTO(bill));
+            }
         }
 
         return PayloadResponse.<BillDTO>builder()
                 .items(billDTOs)
                 .pagination(PaginationResponse.fromPage(bills, page, size))
                 .build();
+    }
+    
+    private Sort createSort(String sortBy, String sortDir) {
+        Sort.Direction direction = "desc".equalsIgnoreCase(sortDir) ? Sort.Direction.DESC : Sort.Direction.ASC;
+        String fieldName = mapSortField(sortBy);
+        return Sort.by(direction, fieldName);
+    }
+    
+    private String mapSortField(String sortBy) {
+        switch (sortBy) {
+            case "paymentDate": return "paymentDate";
+            case "paymentMode": return "paymentMode";
+            case "guestName": return "guest.firstName";
+            default: return "paymentDate";
+        }
     }
 
     @Override

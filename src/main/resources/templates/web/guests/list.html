@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${pageTitle ?: 'Guests - Hotel Management'}">Guests - Hotel Management</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Sidebar -->
+    <div th:replace="~{fragments/web-sidebar :: sidebar}"></div>
+    
+    <!-- Mobile Toggle Button -->
+    <button data-drawer-target="sidebar-multi-level-sidebar" data-drawer-toggle="sidebar-multi-level-sidebar" aria-controls="sidebar-multi-level-sidebar" type="button" 
+            class="text-gray-900 bg-transparent border border-transparent hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden fixed top-2 left-2 z-50">
+        <span class="sr-only">Open sidebar</span>
+        <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M5 7h14M5 12h14M5 17h10"/>
+        </svg>
+    </button>
+    
+    <!-- Main Content -->
+    <div class="p-4 sm:ml-64">
+        <main class="min-h-screen">
+            <div class="p-6 animate-fade-in">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6">Guests</h1>
+            <div class="relative overflow-x-auto bg-gray-50 shadow-sm rounded-lg border border-gray-200">
+                <table class="w-full text-sm text-left text-gray-700">
+                    <thead class="text-sm text-gray-700 bg-gray-100 border-b border-gray-200">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 font-medium">Name</th>
+                            <th scope="col" class="px-6 py-3 font-medium">Email</th>
+                            <th scope="col" class="px-6 py-3 font-medium">Phone</th>
+                            <th scope="col" class="px-6 py-3 font-medium">City</th>
+                            <th scope="col" class="px-6 py-3 font-medium">Country</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${#lists.isEmpty(guests)}" class="bg-white">
+                            <td colspan="5" class="px-6 py-8 text-center text-gray-500">No guests found</td>
+                        </tr>
+                        <tr th:each="guest : ${guests}" class="bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap" th:text="${(guest.firstName ?: '') + ' ' + (guest.lastName ?: '')}">Name</th>
+                            <td class="px-6 py-4" th:text="${guest.email ?: 'N/A'}">Email</td>
+                            <td class="px-6 py-4" th:text="${guest.phoneNo ?: 'N/A'}">Phone</td>
+                            <td class="px-6 py-4" th:text="${guest.city ?: 'N/A'}">City</td>
+                            <td class="px-6 py-4" th:text="${guest.country ?: 'N/A'}">Country</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+            </div>
+        </main>
+    </div>
+    <script src="/js/utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+</body>
+</html>
+

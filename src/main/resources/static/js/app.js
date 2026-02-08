@@ -93,11 +93,11 @@ function updateActiveNav() {
     document.querySelectorAll('[data-page]').forEach(link => {
         const page = link.getAttribute('data-page');
         if (page === currentPage) {
-            link.classList.add('bg-gray-950/50', 'text-white');
-            link.classList.remove('text-gray-300');
+            link.classList.add('bg-blue-600', 'text-white', 'shadow-md');
+            link.classList.remove('text-gray-300', 'hover:bg-gray-700');
         } else {
-            link.classList.remove('bg-gray-950/50', 'text-white');
-            link.classList.add('text-gray-300');
+            link.classList.remove('bg-blue-600', 'text-white', 'shadow-md');
+            link.classList.add('text-gray-300', 'hover:bg-gray-700', 'hover:text-white');
         }
     });
 }

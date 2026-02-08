@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${pageTitle ?: 'Hotel Management System'}">Hotel Management System</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="bg-gray-50">
+    <div th:replace="~{fragments/nav :: navigation}"></div>
+    <main class="min-h-screen">
+        <div class="p-6 animate-fade-in">
+        <div class="mb-6">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Dashboard</h1>
+            <p class="text-gray-600">Welcome back! Here's an overview of your hotel management system.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white card-hover">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="text-blue-100 text-sm font-medium mb-1">Total Hotels</h3>
+                <p class="text-4xl font-bold" th:text="${hotelsCount}">0</p>
+            </div>
+
+            <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-6 text-white card-hover">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="text-green-100 text-sm font-medium mb-1">Total Rooms</h3>
+                <p class="text-4xl font-bold" th:text="${roomsCount}">0</p>
+            </div>
+
+            <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-6 text-white card-hover">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="text-purple-100 text-sm font-medium mb-1">Active Bookings</h3>
+                <p class="text-4xl font-bold" th:text="${bookingsCount}">0</p>
+            </div>
+
+            <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl shadow-lg p-6 text-white card-hover">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="text-orange-100 text-sm font-medium mb-1">Total Bills</h3>
+                <p class="text-4xl font-bold" th:text="${billsCount}">0</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">Recent Bookings</h2>
+                    <a th:href="@{/bookings}" class="text-blue-500 hover:text-blue-600 text-sm font-medium">View All →</a>
+                </div>
+                <div class="space-y-3 custom-scrollbar max-h-96 overflow-y-auto">
+                    <div th:if="${#lists.isEmpty(recentBookings)}" class="text-gray-500 text-center py-4">No bookings found</div>
+                    <div th:each="booking : ${recentBookings}" class="border-b border-gray-200 pb-3 table-row-hover p-2 rounded">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-semibold text-gray-800">Booking #<span th:text="${#strings.substring(booking.bookingId.toString(), 0, 8)}">12345678</span></p>
+                                <p class="text-sm text-gray-500" th:text="${booking.hotelName ?: 'N/A'}">Hotel Name</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-gray-700" th:text="${booking.arrivalDate != null ? #dates.format(booking.arrivalDate, 'MMM dd, yyyy') : 'N/A'}">Jan 01, 2024</p>
+                                <p class="text-xs text-gray-500">to <span th:text="${booking.departureDate != null ? #dates.format(booking.departureDate, 'MMM dd, yyyy') : 'N/A'}">Jan 05, 2024</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 card-hover">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">Recent Bills</h2>
+                    <a th:href="@{/bills}" class="text-blue-500 hover:text-blue-600 text-sm font-medium">View All →</a>
+                </div>
+                <div class="space-y-3 custom-scrollbar max-h-96 overflow-y-auto">
+                    <div th:if="${#lists.isEmpty(recentBills)}" class="text-gray-500 text-center py-4">No bills found</div>
+                    <div th:each="bill : ${recentBills}" class="border-b border-gray-200 pb-3 table-row-hover p-2 rounded">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="font-semibold text-gray-800">Invoice #<span th:text="${#strings.substring(bill.invoiceNo.toString(), 0, 8)}">12345678</span></p>
+                                <p class="text-sm text-gray-500" th:text="${bill.guestName ?: 'N/A'}">Guest Name</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-bold text-green-600" th:text="${'$' + #numbers.formatDecimal((bill.roomCharge ?: 0) + (bill.roomService ?: 0) + (bill.restaurantCharges ?: 0) + (bill.barCharges ?: 0) + (bill.miscCharges ?: 0), 1, 2)}">$0.00</p>
+                                <p class="text-xs text-gray-500" th:text="${bill.paymentDate != null ? #dates.format(bill.paymentDate, 'MMM dd, yyyy') : 'N/A'}">Jan 01, 2024</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="/js/utils.js"></script>
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button')?.addEventListener('click', () => {
+            const menu = document.getElementById('mobile-menu');
+            const iconOpen = document.getElementById('menu-icon-open');
+            const iconClose = document.getElementById('menu-icon-close');
+            menu.classList.toggle('hidden');
+            iconOpen.classList.toggle('hidden');
+            iconClose.classList.toggle('hidden');
+        });
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('mobile-menu').classList.add('hidden');
+                document.getElementById('menu-icon-open').classList.remove('hidden');
+                document.getElementById('menu-icon-close').classList.add('hidden');
+            });
+        });
+    </script>
+</body>
+</html>
+
