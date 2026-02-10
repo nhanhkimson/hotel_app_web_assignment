@@ -170,3 +170,4 @@ UNION ALL
 SELECT 'Guests', COUNT(*) FROM guest;
 
 
+

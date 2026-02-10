@@ -12,3 +12,4 @@ public interface HotelImageRepository extends JpaRepository<HotelImage, UUID> {
     List<HotelImage> findByHotel_HotelCode(UUID hotelCode);
 }
 
+

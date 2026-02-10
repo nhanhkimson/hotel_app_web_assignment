@@ -39,3 +39,4 @@ public class HotelImage {
     private Date uploadDate;
 }
 
+

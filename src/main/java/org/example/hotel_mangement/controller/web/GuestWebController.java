@@ -1,12 +1,12 @@
 package org.example.hotel_mangement.controller.web;
 
-import lombok.RequiredArgsConstructor;
-import org.example.hotel_mangement.model.dto.GuestDTO;
 import org.example.hotel_mangement.service.GuestService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequestMapping("/web/guests")

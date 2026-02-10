@@ -12,3 +12,4 @@ public interface BookingImageRepository extends JpaRepository<BookingImage, UUID
     List<BookingImage> findByBooking_BookingId(UUID bookingId);
 }
 
+

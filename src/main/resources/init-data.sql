@@ -162,3 +162,4 @@ INSERT INTO guest (guest_id, booking_id, guest_title, first_name, last_name, dob
 (uuid_generate_v4(), NULL, 'Mr', 'Daniel', 'Carter', '1983-03-06', 'Male', '+81-3-1234-5678', 'daniel.carter@email.jp', 'guest_pass_30', 'JP01234567', 'Shibuya 1-2-3', '150-0002', 'Tokyo', 'Japan');
 
 
+
