@@ -74,6 +74,7 @@
                     </div>
                     <div class="flex gap-2">
                         <select id="sort-by" class="block w-full px-3 py-2.5 bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm">
+                            <option value="createdAt" th:selected="${sortBy == 'createdAt'}">Newest first</option>
                             <option value="roomNo" th:selected="${sortBy == 'roomNo'}">Sort by Room No</option>
                             <option value="hotelName" th:selected="${sortBy == 'hotelName'}">Sort by Hotel</option>
                             <option value="roomType" th:selected="${sortBy == 'roomType'}">Sort by Type</option>
@@ -91,19 +92,19 @@
                 <table id="rooms-table" class="w-full text-sm text-left text-gray-700">
                     <thead class="text-sm text-gray-700 bg-gray-100 border-b border-gray-200">
                         <tr>
-                            <th scope="col" class="px-6 py-3 font-medium cursor-pointer hover:bg-gray-200 transition-colors" onclick="sortTable('roomNo', /*[[${sortBy}]]*/ 'roomNo', /*[[${sortDir}]]*/ 'asc', '/web/rooms')">
+                            <th scope="col" class="px-6 py-3 font-medium cursor-pointer hover:bg-gray-200 transition-colors" onclick="sortTable('roomNo', /*[[${sortBy}]]*/ 'createdAt', /*[[${sortDir}]]*/ 'desc', '/web/rooms')">
                                 Room No
                                 <span th:if="${sortBy == 'roomNo'}" th:text="${sortDir == 'asc' ? '↑' : '↓'}" class="ml-1"></span>
                             </th>
-                            <th scope="col" class="px-6 py-3 font-medium cursor-pointer hover:bg-gray-200 transition-colors" onclick="sortTable('hotelName', /*[[${sortBy}]]*/ 'roomNo', /*[[${sortDir}]]*/ 'asc', '/web/rooms')">
+                            <th scope="col" class="px-6 py-3 font-medium cursor-pointer hover:bg-gray-200 transition-colors" onclick="sortTable('hotelName', /*[[${sortBy}]]*/ 'createdAt', /*[[${sortDir}]]*/ 'desc', '/web/rooms')">
                                 Hotel
                                 <span th:if="${sortBy == 'hotelName'}" th:text="${sortDir == 'asc' ? '↑' : '↓'}" class="ml-1"></span>
                             </th>
-                            <th scope="col" class="px-6 py-3 font-medium cursor-pointer hover:bg-gray-200 transition-colors" onclick="sortTable('roomType', /*[[${sortBy}]]*/ 'roomNo', /*[[${sortDir}]]*/ 'asc', '/web/rooms')">
+                            <th scope="col" class="px-6 py-3 font-medium cursor-pointer hover:bg-gray-200 transition-colors" onclick="sortTable('roomType', /*[[${sortBy}]]*/ 'createdAt', /*[[${sortDir}]]*/ 'desc', '/web/rooms')">
                                 Room Type
                                 <span th:if="${sortBy == 'roomType'}" th:text="${sortDir == 'asc' ? '↑' : '↓'}" class="ml-1"></span>
                             </th>
-                            <th scope="col" class="px-6 py-3 font-medium cursor-pointer hover:bg-gray-200 transition-colors" onclick="sortTable('occupancy', /*[[${sortBy}]]*/ 'roomNo', /*[[${sortDir}]]*/ 'asc', '/web/rooms')">
+                            <th scope="col" class="px-6 py-3 font-medium cursor-pointer hover:bg-gray-200 transition-colors" onclick="sortTable('occupancy', /*[[${sortBy}]]*/ 'createdAt', /*[[${sortDir}]]*/ 'desc', '/web/rooms')">
                                 Occupancy
                                 <span th:if="${sortBy == 'occupancy'}" th:text="${sortDir == 'asc' ? '↑' : '↓'}" class="ml-1"></span>
                             </th>

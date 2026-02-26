@@ -6,7 +6,9 @@ import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.util.Date;
 import java.util.UUID;
+import jakarta.persistence.PrePersist;
 
 // 6. Bill Entity
 @Entity
@@ -62,4 +64,13 @@ public class Bill {
 
     @Column(name = "cheque_no", length = 50)
     private String chequeNo;
+
+    @Column(name = "created_at", nullable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) createdAt = new Date();
+    }
 }

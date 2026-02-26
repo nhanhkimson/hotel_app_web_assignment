@@ -13,3 +13,5 @@ public interface HotelImageRepository extends JpaRepository<HotelImage, UUID> {
 }
 
 
+
+

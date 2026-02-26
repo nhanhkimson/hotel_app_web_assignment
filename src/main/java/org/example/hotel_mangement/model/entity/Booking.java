@@ -6,8 +6,10 @@ import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import jakarta.persistence.PrePersist;
 
 // 5. Booking Entity
 @Entity
@@ -63,6 +65,15 @@ public class Booking {
 
     @Column(name = "special_req", length = 500)
     private String specialReq;
+
+    @Column(name = "created_at", nullable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) createdAt = new Date();
+    }
 
     @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
     @JsonIgnore

@@ -6,7 +6,9 @@ import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.util.Date;
 import java.util.UUID;
+import jakarta.persistence.PrePersist;
 
 // 7. Employee Entity
 @Entity
@@ -51,4 +53,13 @@ public class Employee {
 
     @Column
     private Double salary;
+
+    @Column(name = "created_at", nullable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) createdAt = new Date();
+    }
 }

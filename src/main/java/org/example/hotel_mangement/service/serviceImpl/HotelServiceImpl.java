@@ -62,14 +62,16 @@ public class HotelServiceImpl implements HotelService {
     }
     
     private String mapSortField(String sortBy) {
-        // Map DTO field names to entity field names
+        // Map DTO field names to entity field names (default: newest first)
+        if (sortBy == null || sortBy.isBlank()) return "createdAt";
         switch (sortBy) {
+            case "createdAt": return "createdAt";
             case "hotelName": return "hotelName";
             case "city": return "city";
             case "country": return "country";
             case "numRooms": return "numRooms";
             case "starRating": return "starRating";
-            default: return "hotelName";
+            default: return "createdAt";
         }
     }
 

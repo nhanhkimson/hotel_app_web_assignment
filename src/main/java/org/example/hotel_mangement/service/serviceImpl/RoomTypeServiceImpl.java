@@ -54,11 +54,13 @@ public class RoomTypeServiceImpl implements RoomTypeService {
     }
     
     private String mapSortField(String sortBy) {
+        if (sortBy == null || sortBy.isBlank()) return "createdAt";
         switch (sortBy) {
+            case "createdAt": return "createdAt";
             case "roomType": return "roomType";
             case "roomPrice": return "roomPrice";
             case "roomDesc": return "roomDesc";
-            default: return "roomType";
+            default: return "createdAt";
         }
     }
 

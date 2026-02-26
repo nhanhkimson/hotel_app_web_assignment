@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import jakarta.persistence.PrePersist;
 
 @Entity
 @Table(name = "room_type")
@@ -30,6 +32,15 @@ public class RoomType {
 
     @Column(name = "room_desc", length = 500)
     private String roomDesc;
+
+    @Column(name = "created_at", nullable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) createdAt = new Date();
+    }
 
     @OneToMany(mappedBy = "roomType")
     private List<Room> rooms;

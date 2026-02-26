@@ -23,6 +23,7 @@ import org.example.hotel_mangement.repository.HotelImageRepository;
 import org.example.hotel_mangement.repository.HotelRepository;
 import org.example.hotel_mangement.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,10 +54,10 @@ public class UserBookingController {
             @RequestParam(required = false) UUID hotelId,
             Model model
     ) {
-        // Get all hotels and rooms for dropdowns
-        List<Hotel> hotels = hotelRepository.findAll();
+        // Get all hotels and rooms for dropdowns (newest first)
+        List<Hotel> hotels = hotelRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
         model.addAttribute("hotels", hotels);
-        model.addAttribute("rooms", roomRepository.findAll());
+        model.addAttribute("rooms", roomRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt")));
         
         // Pre-select hotel if provided
         if (hotelId != null) {

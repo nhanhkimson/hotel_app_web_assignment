@@ -55,10 +55,12 @@ public class RoleServiceImpl implements RoleService {
     }
     
     private String mapSortField(String sortBy) {
+        if (sortBy == null || sortBy.isBlank()) return "createdAt";
         switch (sortBy) {
+            case "createdAt": return "createdAt";
             case "roleTitle": return "roleTitle";
             case "roleDesc": return "roleDesc";
-            default: return "roleTitle";
+            default: return "createdAt";
         }
     }
 

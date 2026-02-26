@@ -12,4 +12,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, UUID> {
     @EntityGraph(attributePaths = {"hotel", "role"})
     @Override
     List<Employee> findAll();
+
+    @EntityGraph(attributePaths = {"hotel", "role"})
+    List<Employee> findAllByOrderByCreatedAtDesc();
 }

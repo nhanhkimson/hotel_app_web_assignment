@@ -6,8 +6,10 @@ import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import jakarta.persistence.PrePersist;
 
 // 4. Guest Entity
 @Entity
@@ -63,6 +65,15 @@ public class Guest {
 
     @Column(length = 50)
     private String country;
+
+    @Column(name = "created_at", nullable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) createdAt = new Date();
+    }
 
     @OneToMany(mappedBy = "guest")
     @JsonIgnore

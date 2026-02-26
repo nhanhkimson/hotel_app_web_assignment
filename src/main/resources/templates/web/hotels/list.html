@@ -74,6 +74,7 @@
                 </div>
                 <div class="flex gap-2">
                     <select id="sort-by" class="block w-full px-3 py-2.5 bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm">
+                        <option value="createdAt" th:selected="${sortBy == 'createdAt'}">Newest first</option>
                         <option value="hotelName" th:selected="${sortBy == 'hotelName'}">Sort by Name</option>
                         <option value="city" th:selected="${sortBy == 'city'}">Sort by City</option>
                         <option value="country" th:selected="${sortBy == 'country'}">Sort by Country</option>
@@ -220,7 +221,7 @@
     <script>
         // Sort functionality
         function sortTable(sortBy) {
-            const currentSortBy = /*[[${sortBy}]]*/ 'hotelName';
+            const currentSortBy = /*[[${sortBy}]]*/ 'createdAt';
             const currentSortDir = /*[[${sortDir}]]*/ 'asc';
             const search = document.getElementById('hotel-search')?.value || '';
             const newSortDir = (currentSortBy === sortBy && currentSortDir === 'asc') ? 'desc' : 'asc';

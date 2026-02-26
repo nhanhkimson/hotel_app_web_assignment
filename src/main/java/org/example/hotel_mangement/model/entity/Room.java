@@ -6,8 +6,10 @@ import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import jakarta.persistence.PrePersist;
 
 // 2. Room Entity
 @Entity
@@ -32,6 +34,15 @@ public class Room {
 
     @Column(length = 20)
     private String occupancy;
+
+    @Column(name = "created_at", nullable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) createdAt = new Date();
+    }
 
     @OneToMany(mappedBy = "room")
     @JsonIgnore

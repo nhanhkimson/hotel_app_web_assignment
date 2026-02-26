@@ -5,8 +5,11 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import jakarta.persistence.PrePersist;
+
 @Entity
 @Table(name = "hotel")
 @Data
@@ -39,6 +42,15 @@ public class Hotel {
 
     @Column(name = "star_rating")
     private Integer starRating;
+
+    @Column(name = "created_at", nullable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) createdAt = new Date();
+    }
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL)
     @JsonIgnore

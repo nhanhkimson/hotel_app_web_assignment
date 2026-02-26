@@ -64,13 +64,15 @@ public class BookingServiceImpl implements BookingService {
     }
     
     private String mapSortField(String sortBy) {
+        if (sortBy == null || sortBy.isBlank()) return "createdAt";
         switch (sortBy) {
+            case "createdAt": return "createdAt";
             case "bookingDate": return "bookingDate";
             case "arrivalDate": return "arrivalDate";
             case "departureDate": return "departureDate";
             case "guestName": return "guest.firstName";
             case "hotelName": return "hotel.hotelName";
-            default: return "bookingDate";
+            default: return "createdAt";
         }
     }
 

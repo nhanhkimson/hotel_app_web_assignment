@@ -19,6 +19,9 @@ public interface GuestRepository extends JpaRepository<Guest, UUID> {
     @EntityGraph(attributePaths = {"booking"})
     @Override
     List<Guest> findAll();
+
+    @EntityGraph(attributePaths = {"booking"})
+    List<Guest> findAllByOrderByCreatedAtDesc();
     
     @EntityGraph(attributePaths = {"booking"})
     @Query("SELECT g FROM Guest g WHERE " +

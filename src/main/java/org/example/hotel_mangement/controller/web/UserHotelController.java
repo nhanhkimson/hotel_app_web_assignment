@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.example.hotel_mangement.model.entity.Hotel;
+import org.springframework.data.domain.Sort;
 import org.example.hotel_mangement.model.entity.HotelImage;
 import org.example.hotel_mangement.model.entity.Room;
 import org.example.hotel_mangement.repository.HotelImageRepository;
@@ -31,17 +32,20 @@ public class UserHotelController {
             @RequestParam(required = false) String search,
             Model model
     ) {
+        // Newest first (order by created date)
+        List<Hotel> allHotels = hotelRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
         List<Hotel> hotels;
         if (search != null && !search.trim().isEmpty()) {
-            hotels = hotelRepository.findAll().stream()
-                    .filter(hotel -> 
-                        hotel.getHotelName().toLowerCase().contains(search.toLowerCase()) ||
-                        (hotel.getCity() != null && hotel.getCity().toLowerCase().contains(search.toLowerCase())) ||
-                        (hotel.getCountry() != null && hotel.getCountry().toLowerCase().contains(search.toLowerCase()))
+            String term = search.trim().toLowerCase();
+            hotels = allHotels.stream()
+                    .filter(hotel ->
+                        hotel.getHotelName().toLowerCase().contains(term) ||
+                        (hotel.getCity() != null && hotel.getCity().toLowerCase().contains(term)) ||
+                        (hotel.getCountry() != null && hotel.getCountry().toLowerCase().contains(term))
                     )
                     .toList();
         } else {
-            hotels = hotelRepository.findAll();
+            hotels = allHotels;
         }
         
         // Get images for all hotels

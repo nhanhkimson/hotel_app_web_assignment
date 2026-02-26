@@ -61,11 +61,13 @@ public class BillServiceImpl implements BillService {
     }
     
     private String mapSortField(String sortBy) {
+        if (sortBy == null || sortBy.isBlank()) return "createdAt";
         switch (sortBy) {
+            case "createdAt": return "createdAt";
             case "paymentDate": return "paymentDate";
             case "paymentMode": return "paymentMode";
             case "guestName": return "guest.firstName";
-            default: return "paymentDate";
+            default: return "createdAt";
         }
     }
 
