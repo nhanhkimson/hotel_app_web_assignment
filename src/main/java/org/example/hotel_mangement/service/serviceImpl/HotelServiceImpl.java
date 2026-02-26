@@ -29,19 +29,17 @@ public class HotelServiceImpl implements HotelService {
         org.springframework.data.domain.Sort sort = createSort(sortBy, sortDir);
         PageRequest pageable = PageRequest.of(page - 1, size, sort);
         
-        // Use search if provided, otherwise get all
+        // Use search if provided, otherwise get all (only active)
         Page<Hotel> hotels;
         if (search != null && !search.trim().isEmpty()) {
             hotels = hotelRepository.searchHotels(search.trim(), pageable);
         } else {
-            hotels = hotelRepository.findAll(pageable);
+            hotels = hotelRepository.findByActiveTrueOrActiveIsNull(pageable);
         }
 
         List<HotelDTO> hotelDTOs = new ArrayList<>();
-        if (!hotels.isEmpty()) {
-            for (Hotel hotel : hotels) {
-                hotelDTOs.add(toDTO(hotel));
-            }
+        for (Hotel hotel : hotels) {
+            hotelDTOs.add(toDTO(hotel));
         }
 
         return PayloadResponse.<HotelDTO>builder()
@@ -100,7 +98,8 @@ public class HotelServiceImpl implements HotelService {
     @Override
     public HotelDTO deleteHotel(UUID id) {
         Hotel hotel = getHotelById(id);
-        hotelRepository.delete(hotel);
+        hotel.setActive(false);
+        hotelRepository.save(hotel);
         return toDTO(hotel);
     }
 

@@ -25,6 +25,9 @@ public class Role {
     @Column(name = "role_desc", length = 200)
     private String roleDesc;
 
+    @Column(name = "active", nullable = true)
+    private Boolean active = true;
+
     @Column(name = "created_at", nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
@@ -32,6 +35,7 @@ public class Role {
     @PrePersist
     protected void onCreate() {
         if (createdAt == null) createdAt = new Date();
+        if (active == null) active = true;
     }
 
     @OneToMany(mappedBy = "role")

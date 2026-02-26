@@ -31,14 +31,12 @@ public class RoomTypeServiceImpl implements RoomTypeService {
         if (search != null && !search.trim().isEmpty()) {
             roomTypes = roomTypeRepository.searchRoomTypes(search.trim(), pageable);
         } else {
-            roomTypes = roomTypeRepository.findAll(pageable);
+            roomTypes = roomTypeRepository.findByActiveTrueOrActiveIsNull(pageable);
         }
 
         List<RoomTypeDto> roomTypeDto = new ArrayList<>();
-        if (!roomTypes.isEmpty()) {
-            for (RoomType roomType : roomTypes) {
-                roomTypeDto.add(toDTO(roomType));
-            }
+        for (RoomType roomType : roomTypes) {
+            roomTypeDto.add(toDTO(roomType));
         }
 
         return PayloadResponse.<RoomTypeDto>builder()
@@ -88,7 +86,8 @@ public class RoomTypeServiceImpl implements RoomTypeService {
     @Override
     public RoomTypeDto deleteRoomType(UUID id) {
         RoomType roomType = getRoomTypeById(id);
-        roomTypeRepository.delete(roomType);
+        roomType.setActive(false);
+        roomTypeRepository.save(roomType);
         return toDTO(roomType);
     }
 

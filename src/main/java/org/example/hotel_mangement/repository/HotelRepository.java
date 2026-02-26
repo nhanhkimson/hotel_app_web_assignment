@@ -10,8 +10,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.UUID;
 
 public interface HotelRepository extends JpaRepository<Hotel, UUID> {
-    
-    @Query("SELECT h FROM Hotel h WHERE " +
+
+    Page<Hotel> findByActiveTrueOrActiveIsNull(Pageable pageable);
+
+    @Query("SELECT h FROM Hotel h WHERE (h.active = true OR h.active IS NULL) AND " +
            "(:search IS NULL OR :search = '' OR " +
            "LOWER(h.hotelName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(h.city) LIKE LOWER(CONCAT('%', :search, '%')) OR " +

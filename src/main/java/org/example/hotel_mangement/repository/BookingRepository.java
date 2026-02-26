@@ -14,11 +14,11 @@ import org.springframework.data.repository.query.Param;
 public interface BookingRepository extends JpaRepository<Booking, UUID> {
     
     @EntityGraph(attributePaths = {"hotel", "guest", "room"})
-    @Query("SELECT b FROM Booking b")
+    @Query("SELECT b FROM Booking b WHERE (b.active = true OR b.active IS NULL)")
     Page<Booking> findAllWithRelations(Pageable pageable);
-    
+
     @EntityGraph(attributePaths = {"hotel", "guest", "room"})
-    @Query("SELECT b FROM Booking b WHERE " +
+    @Query("SELECT b FROM Booking b WHERE (b.active = true OR b.active IS NULL) AND " +
            "(:search IS NULL OR :search = '' OR " +
            "LOWER(b.guest.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(b.guest.lastName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +

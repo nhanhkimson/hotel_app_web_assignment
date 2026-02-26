@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.example.hotel_mangement.model.entity.Employee;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface EmployeeRepository extends JpaRepository<Employee, UUID> {
     
@@ -14,5 +15,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, UUID> {
     List<Employee> findAll();
 
     @EntityGraph(attributePaths = {"hotel", "role"})
-    List<Employee> findAllByOrderByCreatedAtDesc();
+    @Query("SELECT e FROM Employee e WHERE (e.active = true OR e.active IS NULL) ORDER BY e.createdAt DESC")
+    List<Employee> findActiveEmployeesOrderByCreatedAtDesc();
 }

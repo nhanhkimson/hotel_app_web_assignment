@@ -43,10 +43,8 @@ public class RoomServiceImpl implements RoomService {
         }
 
         List<RoomDTO> roomDTOs = new ArrayList<>();
-        if (!rooms.isEmpty()) {
-            for (Room room : rooms) {
-                roomDTOs.add(toDTO(room));
-            }
+        for (Room room : rooms) {
+            roomDTOs.add(toDTO(room));
         }
 
         return PayloadResponse.<RoomDTO>builder()
@@ -98,7 +96,8 @@ public class RoomServiceImpl implements RoomService {
     @Override
     public RoomDTO deleteRoom(UUID id) {
         Room room = getRoomById(id);
-        roomRepository.delete(room);
+        room.setActive(false);
+        roomRepository.save(room);
         return toDTO(room);
     }
 

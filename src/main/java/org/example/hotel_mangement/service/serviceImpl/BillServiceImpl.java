@@ -42,10 +42,8 @@ public class BillServiceImpl implements BillService {
         }
 
         List<BillDTO> billDTOs = new ArrayList<>();
-        if (!bills.isEmpty()) {
-            for (Bill bill : bills) {
-                billDTOs.add(toDTO(bill));
-            }
+        for (Bill bill : bills) {
+            billDTOs.add(toDTO(bill));
         }
 
         return PayloadResponse.<BillDTO>builder()
@@ -96,7 +94,8 @@ public class BillServiceImpl implements BillService {
     @Override
     public BillDTO deleteBill(UUID id) {
         Bill bill = getBillById(id);
-        billRepository.delete(bill);
+        bill.setActive(false);
+        billRepository.save(bill);
         return toDTO(bill);
     }
 

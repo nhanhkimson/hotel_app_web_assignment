@@ -33,7 +33,7 @@ public class BillController {
             @RequestParam(defaultValue = "1") @Min(value = 1, message = "Page number must be at least 1") int page,
             @RequestParam(defaultValue = "10") @Min(value = 1, message = "Size must be at least 1") int size,
             @RequestParam(required = false) String search,
-            @RequestParam(defaultValue = "paymentDate") String sortBy,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "desc") String sortDir
     ) {
         ApiResponse<PayloadResponse<BillDTO>> billsApiResponse = ApiResponse.<PayloadResponse<BillDTO>>builder()

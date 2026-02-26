@@ -45,10 +45,8 @@ public class BookingServiceImpl implements BookingService {
         }
 
         List<BookingDTO> bookingDTOs = new ArrayList<>();
-        if (!bookings.isEmpty()) {
-            for (Booking booking : bookings) {
-                bookingDTOs.add(toDTO(booking));
-            }
+        for (Booking booking : bookings) {
+            bookingDTOs.add(toDTO(booking));
         }
 
         return PayloadResponse.<BookingDTO>builder()
@@ -101,7 +99,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDTO deleteBooking(UUID id) {
         Booking booking = getBookingById(id);
-        bookingRepository.delete(booking);
+        booking.setActive(false);
+        bookingRepository.save(booking);
         return toDTO(booking);
     }
 

@@ -32,8 +32,11 @@ public class UserHotelController {
             @RequestParam(required = false) String search,
             Model model
     ) {
-        // Newest first (order by created date)
-        List<Hotel> allHotels = hotelRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
+        // Newest first (order by created date), only active hotels (null = active for existing data)
+        List<Hotel> allHotels = hotelRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"))
+                .stream()
+                .filter(h -> h.getActive() == null || h.getActive())
+                .toList();
         List<Hotel> hotels;
         if (search != null && !search.trim().isEmpty()) {
             String term = search.trim().toLowerCase();
@@ -68,12 +71,14 @@ public class UserHotelController {
             Hotel hotel = hotelRepository.findById(id)
                     .orElse(null);
             
-            if (hotel == null) {
+            if (hotel == null || Boolean.FALSE.equals(hotel.getActive())) {
                 return "redirect:/user/hotels?error=notfound";
             }
             
             List<HotelImage> images = hotelImageRepository.findByHotel_HotelCode(id);
-            List<Room> rooms = roomRepository.findByHotel_HotelCode(id);
+            List<Room> rooms = roomRepository.findByHotel_HotelCode(id).stream()
+                    .filter(r -> r.getActive() == null || r.getActive())
+                    .toList();
             
             model.addAttribute("hotel", hotel);
             model.addAttribute("images", images != null ? images : java.util.Collections.emptyList());

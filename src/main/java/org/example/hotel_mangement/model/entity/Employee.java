@@ -54,6 +54,9 @@ public class Employee {
     @Column
     private Double salary;
 
+    @Column(name = "active", nullable = true)
+    private Boolean active = true;
+
     @Column(name = "created_at", nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
@@ -61,5 +64,6 @@ public class Employee {
     @PrePersist
     protected void onCreate() {
         if (createdAt == null) createdAt = new Date();
+        if (active == null) active = true;
     }
 }

@@ -88,7 +88,7 @@ public class RoomTypeWebController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error creating room type: " + e.getMessage());
         }
-        return "redirect:/web/room-types?page=1&sortBy=roomType&sortDir=asc";
+        return "redirect:/web/room-types?page=1&sortBy=createdAt&sortDir=desc";
     }
 
     @PostMapping("/{id}")
@@ -103,7 +103,7 @@ public class RoomTypeWebController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error updating room type: " + e.getMessage());
         }
-        return "redirect:/web/room-types?page=1&sortBy=roomType&sortDir=asc";
+        return "redirect:/web/room-types?page=1&sortBy=createdAt&sortDir=desc";
     }
 
     @PostMapping("/{id}/delete")
@@ -114,6 +114,6 @@ public class RoomTypeWebController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error deleting room type: " + e.getMessage());
         }
-        return "redirect:/web/room-types?page=1&sortBy=roomType&sortDir=asc";
+        return "redirect:/web/room-types?page=1&sortBy=createdAt&sortDir=desc";
     }
 }

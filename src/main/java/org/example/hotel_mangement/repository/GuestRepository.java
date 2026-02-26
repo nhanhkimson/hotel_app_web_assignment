@@ -21,7 +21,8 @@ public interface GuestRepository extends JpaRepository<Guest, UUID> {
     List<Guest> findAll();
 
     @EntityGraph(attributePaths = {"booking"})
-    List<Guest> findAllByOrderByCreatedAtDesc();
+    @Query("SELECT g FROM Guest g WHERE (g.active = true OR g.active IS NULL) ORDER BY g.createdAt DESC")
+    List<Guest> findActiveGuestsOrderByCreatedAtDesc();
     
     @EntityGraph(attributePaths = {"booking"})
     @Query("SELECT g FROM Guest g WHERE " +

@@ -54,16 +54,25 @@ public class UserBookingController {
             @RequestParam(required = false) UUID hotelId,
             Model model
     ) {
-        // Get all hotels and rooms for dropdowns (newest first)
-        List<Hotel> hotels = hotelRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
+        // Get all hotels and rooms for dropdowns (newest first), only active (null = active for existing data)
+        List<Hotel> hotels = hotelRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"))
+                .stream()
+                .filter(h -> h.getActive() == null || h.getActive())
+                .toList();
         model.addAttribute("hotels", hotels);
-        model.addAttribute("rooms", roomRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt")));
+        model.addAttribute("rooms", roomRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"))
+                .stream()
+                .filter(r -> r.getActive() == null || r.getActive())
+                .toList());
         
         // Pre-select hotel if provided
         if (hotelId != null) {
             model.addAttribute("selectedHotelId", hotelId);
-            // Filter rooms for selected hotel
-            List<Room> hotelRooms = roomRepository.findByHotel_HotelCode(hotelId);
+            // Filter rooms for selected hotel (only active)
+            List<Room> hotelRooms = roomRepository.findByHotel_HotelCode(hotelId)
+                    .stream()
+                    .filter(r -> r.getActive() == null || r.getActive())
+                    .toList();
             model.addAttribute("hotelRooms", hotelRooms);
         }
         

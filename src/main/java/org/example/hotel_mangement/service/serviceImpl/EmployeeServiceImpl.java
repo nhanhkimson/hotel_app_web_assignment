@@ -20,7 +20,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public List<EmployeeDTO> getEmployee() {
         List<EmployeeDTO> employeeDTO  = new ArrayList<>();
-        List<Employee> employees = employeeRepository.findAllByOrderByCreatedAtDesc();
+        List<Employee> employees = employeeRepository.findActiveEmployeesOrderByCreatedAtDesc();
         for (Employee employee : employees) {
             employeeDTO.add(employeeToDTO(employee));
         }

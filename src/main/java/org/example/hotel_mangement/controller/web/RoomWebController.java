@@ -95,7 +95,7 @@ public class RoomWebController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error creating room: " + e.getMessage());
         }
-        return "redirect:/web/rooms?page=1&sortBy=roomNo&sortDir=asc";
+        return "redirect:/web/rooms?page=1&sortBy=createdAt&sortDir=desc";
     }
 
     @PostMapping("/{id}")
@@ -110,7 +110,7 @@ public class RoomWebController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error updating room: " + e.getMessage());
         }
-        return "redirect:/web/rooms?page=1&sortBy=roomNo&sortDir=asc";
+        return "redirect:/web/rooms?page=1&sortBy=createdAt&sortDir=desc";
     }
 
     @PostMapping("/{id}/delete")
@@ -121,6 +121,6 @@ public class RoomWebController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error deleting room: " + e.getMessage());
         }
-        return "redirect:/web/rooms?page=1&sortBy=roomNo&sortDir=asc";
+        return "redirect:/web/rooms?page=1&sortBy=createdAt&sortDir=desc";
     }
 }

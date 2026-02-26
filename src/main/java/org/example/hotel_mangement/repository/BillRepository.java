@@ -14,11 +14,11 @@ import org.springframework.data.repository.query.Param;
 public interface BillRepository extends JpaRepository<Bill, UUID> {
     
     @EntityGraph(attributePaths = {"booking", "guest"})
-    @Query("SELECT b FROM Bill b")
+    @Query("SELECT b FROM Bill b WHERE (b.active = true OR b.active IS NULL)")
     Page<Bill> findAllWithRelations(Pageable pageable);
-    
+
     @EntityGraph(attributePaths = {"booking", "guest"})
-    @Query("SELECT b FROM Bill b WHERE " +
+    @Query("SELECT b FROM Bill b WHERE (b.active = true OR b.active IS NULL) AND " +
            "(:search IS NULL OR :search = '' OR " +
            "CAST(b.invoiceNo AS string) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(b.guest.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +

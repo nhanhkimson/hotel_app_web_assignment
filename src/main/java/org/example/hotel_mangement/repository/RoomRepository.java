@@ -15,11 +15,11 @@ import org.springframework.data.repository.query.Param;
 public interface RoomRepository extends JpaRepository<Room, UUID> {
     
     @EntityGraph(attributePaths = {"hotel", "roomType"})
-    @Query("SELECT r FROM Room r")
+    @Query("SELECT r FROM Room r WHERE (r.active = true OR r.active IS NULL)")
     Page<Room> findAllWithRelations(Pageable pageable);
-    
+
     @EntityGraph(attributePaths = {"hotel", "roomType"})
-    @Query("SELECT r FROM Room r WHERE " +
+    @Query("SELECT r FROM Room r WHERE (r.active = true OR r.active IS NULL) AND " +
            "(:search IS NULL OR :search = '' OR " +
            "LOWER(r.roomNo) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(r.hotel.hotelName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +

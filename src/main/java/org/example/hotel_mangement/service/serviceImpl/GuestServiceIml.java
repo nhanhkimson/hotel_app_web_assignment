@@ -19,7 +19,7 @@ public class GuestServiceIml implements GuestService {
     @Override
     public List<GuestDTO> getAllGuest() {
         List<GuestDTO> guestDTOs = new ArrayList<>();
-        List<Guest> guests = guestRepository.findAllByOrderByCreatedAtDesc();
+        List<Guest> guests = guestRepository.findActiveGuestsOrderByCreatedAtDesc();
         for (Guest guest : guests) {
             guestDTOs.add(guestToDTO(guest));
         }

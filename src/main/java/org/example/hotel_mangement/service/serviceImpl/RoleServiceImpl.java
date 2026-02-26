@@ -32,14 +32,12 @@ public class RoleServiceImpl implements RoleService {
         if (search != null && !search.trim().isEmpty()) {
             roles = roleRepository.searchRoles(search.trim(), pageable);
         } else {
-            roles = roleRepository.findAll(pageable);
+            roles = roleRepository.findByActiveTrueOrActiveIsNull(pageable);
         }
 
         List<RoleDTO> roleDTOs = new ArrayList<>();
-        if (!roles.isEmpty()) {
-            for (Role role : roles) {
-                roleDTOs.add(toDTO(role));
-            }
+        for (Role role : roles) {
+            roleDTOs.add(toDTO(role));
         }
 
         return PayloadResponse.<RoleDTO>builder()
@@ -89,7 +87,8 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public RoleDTO deleteRole(UUID id) {
         Role role = getRoleById(id);
-        roleRepository.delete(role);
+        role.setActive(false);
+        roleRepository.save(role);
         return toDTO(role);
     }
 

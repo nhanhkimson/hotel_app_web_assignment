@@ -127,7 +127,7 @@ public class HotelWebController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error creating hotel: " + e.getMessage());
         }
-        return "redirect:/web/hotels?page=1&sortBy=hotelName&sortDir=asc";
+        return "redirect:/web/hotels?page=1&sortBy=createdAt&sortDir=desc";
     }
 
     @PostMapping("/{id}")
@@ -151,7 +151,7 @@ public class HotelWebController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error updating hotel: " + e.getMessage());
         }
-        return "redirect:/web/hotels?page=1&sortBy=hotelName&sortDir=asc";
+        return "redirect:/web/hotels?page=1&sortBy=createdAt&sortDir=desc";
     }
     
     private void saveHotelImages(Hotel hotel, MultipartFile[] images) throws IOException {
@@ -204,7 +204,7 @@ public class HotelWebController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Error deleting hotel: " + e.getMessage());
         }
-        return "redirect:/web/hotels?page=1&sortBy=hotelName&sortDir=asc";
+        return "redirect:/web/hotels?page=1&sortBy=createdAt&sortDir=desc";
     }
 }
 

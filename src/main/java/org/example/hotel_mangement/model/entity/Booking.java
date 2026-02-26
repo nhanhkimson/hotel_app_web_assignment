@@ -66,6 +66,9 @@ public class Booking {
     @Column(name = "special_req", length = 500)
     private String specialReq;
 
+    @Column(name = "active", nullable = true)
+    private Boolean active = true;
+
     @Column(name = "created_at", nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
@@ -73,6 +76,7 @@ public class Booking {
     @PrePersist
     protected void onCreate() {
         if (createdAt == null) createdAt = new Date();
+        if (active == null) active = true;
     }
 
     @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)

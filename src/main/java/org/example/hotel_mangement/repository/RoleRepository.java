@@ -11,7 +11,9 @@ import java.util.UUID;
 
 public interface RoleRepository extends JpaRepository<Role, UUID> {
     
-    @Query("SELECT r FROM Role r WHERE " +
+    Page<Role> findByActiveTrueOrActiveIsNull(Pageable pageable);
+
+    @Query("SELECT r FROM Role r WHERE (r.active = true OR r.active IS NULL) AND " +
            "(:search IS NULL OR :search = '' OR " +
            "LOWER(r.roleTitle) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(r.roleDesc) LIKE LOWER(CONCAT('%', :search, '%')))")

@@ -14,7 +14,9 @@ import java.util.UUID;
 @Repository
 public interface RoomTypeRepository extends JpaRepository<RoomType, UUID> {
     
-    @Query("SELECT rt FROM RoomType rt WHERE " +
+    Page<RoomType> findByActiveTrueOrActiveIsNull(Pageable pageable);
+
+    @Query("SELECT rt FROM RoomType rt WHERE (rt.active = true OR rt.active IS NULL) AND " +
            "(:search IS NULL OR :search = '' OR " +
            "LOWER(rt.roomType) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
            "LOWER(rt.roomDesc) LIKE LOWER(CONCAT('%', :search, '%')))")
